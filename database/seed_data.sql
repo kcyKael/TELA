@@ -1,0 +1,2 @@
+-- TELA seed data file.
+-- Starter data such as the Hoodies category, hoodie products, and sample accounts will be added in later milestones.

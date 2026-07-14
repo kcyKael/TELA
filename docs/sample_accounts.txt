@@ -1,0 +1,3 @@
+TELA Sample Accounts
+
+Sample accounts will be added after registration and login are implemented.

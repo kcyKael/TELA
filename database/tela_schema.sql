@@ -1,0 +1,2 @@
+-- TELA main database schema file.
+-- Tables will be added only when each approved feature milestone requires them.
