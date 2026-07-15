@@ -15,7 +15,7 @@ $tokenLifetimeSeconds = 24 * 60 * 60;
 if ($token === '') {
     $messageText = 'Verification token is missing. Please use the link from your verification email.';
 } else {
-    $selectSql = 'SELECT user_id, full_name, is_verified, created_at, updated_at FROM users WHERE verification_token = ? LIMIT 1';
+    $selectSql = 'SELECT user_id, full_name, is_verified, UNIX_TIMESTAMP(created_at) AS created_at_unix, UNIX_TIMESTAMP(updated_at) AS updated_at_unix FROM users WHERE verification_token = ? LIMIT 1';
     $selectStmt = mysqli_prepare($conn, $selectSql);
 
     if ($selectStmt === false) {
@@ -23,7 +23,7 @@ if ($token === '') {
     } else {
         mysqli_stmt_bind_param($selectStmt, 's', $token);
         mysqli_stmt_execute($selectStmt);
-        mysqli_stmt_bind_result($selectStmt, $userId, $fullName, $isVerified, $createdAt, $updatedAt);
+        mysqli_stmt_bind_result($selectStmt, $userId, $fullName, $isVerified, $createdAtUnix, $updatedAtUnix);
         $accountFound = mysqli_stmt_fetch($selectStmt);
         mysqli_stmt_close($selectStmt);
 
@@ -33,8 +33,8 @@ if ($token === '') {
             $messageText = 'This account is already verified. You may log in.';
             $showLoginLink = true;
         } else {
-            $tokenIssueTime = $updatedAt !== null ? strtotime($updatedAt) : strtotime($createdAt);
-            $tokenExpired = $tokenIssueTime === false || (time() - $tokenIssueTime) > $tokenLifetimeSeconds;
+            $tokenIssueTime = $updatedAtUnix !== null ? (int) $updatedAtUnix : (int) $createdAtUnix;
+            $tokenExpired = $tokenIssueTime === 0 || (time() - $tokenIssueTime) > $tokenLifetimeSeconds;
 
             if ($tokenExpired) {
                 $expireSql = 'UPDATE users SET verification_token = NULL, updated_at = NOW() WHERE user_id = ? AND verification_token = ? AND is_verified = 0';

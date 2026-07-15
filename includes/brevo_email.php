@@ -32,10 +32,12 @@ function sendVerificationEmail($buyerEmail, $buyerName, $verificationToken)
 function sendBrevoEmail($toEmail, $toName, $subject, $htmlContent, $textContent)
 {
     if (BREVO_API_KEY === '' || BREVO_SENDER_EMAIL === '') {
+        error_log('TELA Brevo email: configuration missing.');
         return false;
     }
 
     if (!function_exists('curl_init')) {
+        error_log('TELA Brevo email: cURL extension unavailable.');
         return false;
     }
 
@@ -58,12 +60,14 @@ function sendBrevoEmail($toEmail, $toName, $subject, $htmlContent, $textContent)
     $jsonPayload = json_encode($payload);
 
     if ($jsonPayload === false) {
+        error_log('TELA Brevo email: JSON encoding failed.');
         return false;
     }
 
     $curl = curl_init('https://api.brevo.com/v3/smtp/email');
 
     if ($curl === false) {
+        error_log('TELA Brevo email: cURL initialization failed.');
         return false;
     }
 
@@ -80,30 +84,38 @@ function sendBrevoEmail($toEmail, $toName, $subject, $htmlContent, $textContent)
     $response = curl_exec($curl);
 
     if ($response === false) {
+        $curlErrorNumber = curl_errno($curl);
+        error_log('TELA Brevo email: cURL transport error category ' . $curlErrorNumber . '.');
         curl_close($curl);
         return false;
     }
 
     $httpStatus = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     curl_close($curl);
+    error_log('TELA Brevo email: HTTP status ' . $httpStatus . '.');
 
     if ($httpStatus < 200 || $httpStatus >= 300) {
+        error_log('TELA Brevo email: non-success HTTP status.');
         return false;
     }
 
     if ($response === '') {
+        error_log('TELA Brevo email: empty API response.');
         return false;
     }
 
     $responseData = json_decode($response, true);
 
     if (!is_array($responseData) || json_last_error() !== JSON_ERROR_NONE) {
+        error_log('TELA Brevo email: malformed JSON response.');
         return false;
     }
 
     if (!isset($responseData['messageId']) && !isset($responseData['messageIds'])) {
+        error_log('TELA Brevo email: success response missing message ID.');
         return false;
     }
 
+    error_log('TELA Brevo email: accepted by Brevo.');
     return true;
 }
