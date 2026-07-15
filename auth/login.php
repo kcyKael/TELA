@@ -10,7 +10,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $adminRedirect = rtrim(APP_BASE_URL, '/') . '/admin/dashboard.php';
 $buyerRedirect = rtrim(APP_BASE_URL, '/') . '/buyer/store.php';
 
-if (isset($_SESSION['user_id'], $_SESSION['role'])) {
+if (isset($_SESSION['user_id'], $_SESSION['role'], $_SESSION['is_verified']) && (int) $_SESSION['is_verified'] === 1) {
     if ($_SESSION['role'] === 'admin') {
         redirectTo($adminRedirect);
     }

@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../includes/auth_check.php';
+requireBuyer();
 $pageTitle = 'Product Details';
 $activePage = 'store';
 include __DIR__ . '/../includes/header.php';
