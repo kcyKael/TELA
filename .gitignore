@@ -22,3 +22,6 @@ Thumbs.db
 *.tmp
 *.bak
 *.swp
+
+
+/config/config.local.php

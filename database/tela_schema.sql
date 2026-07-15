@@ -37,7 +37,8 @@ CREATE TABLE users (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT uq_users_email UNIQUE (email),
-    CONSTRAINT uq_users_verification_token UNIQUE (verification_token)
+    CONSTRAINT uq_users_verification_token UNIQUE (verification_token),
+    CONSTRAINT chk_users_role CHECK (role IN ('admin', 'buyer'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -72,7 +73,8 @@ CREATE TABLE products (
         ON UPDATE CASCADE
         ON DELETE RESTRICT,
     CONSTRAINT chk_products_price CHECK (price > 0),
-    CONSTRAINT chk_products_stock CHECK (stock >= 0)
+    CONSTRAINT chk_products_stock CHECK (stock >= 0),
+    CONSTRAINT chk_products_status CHECK (status IN ('Active', 'Inactive'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -116,7 +118,8 @@ CREATE TABLE orders (
         FOREIGN KEY (user_id) REFERENCES users(user_id)
         ON UPDATE CASCADE
         ON DELETE RESTRICT,
-    CONSTRAINT chk_orders_total_amount CHECK (total_amount > 0)
+    CONSTRAINT chk_orders_total_amount CHECK (total_amount > 0),
+    CONSTRAINT chk_orders_status CHECK (order_status IN ('Pending', 'Processing', 'Completed', 'Cancelled'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
