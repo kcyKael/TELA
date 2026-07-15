@@ -54,8 +54,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($contactNumber === '') {
         $errors[] = 'Contact number is required.';
-    } elseif (strlen($contactNumber) > 20 || !preg_match('/^[0-9+\-\s]+$/', $contactNumber)) {
-        $errors[] = 'Contact number may contain numbers, spaces, plus sign, and hyphen only.';
+    } else {
+        $contactDigits = preg_replace('/\D/', '', $contactNumber);
+
+        if (strlen($contactNumber) > 20 || !preg_match('/^[0-9+\-\s]+$/', $contactNumber)) {
+            $errors[] = 'Contact number may contain numbers, spaces, plus sign, and hyphen only.';
+        } elseif (strlen($contactDigits) < 10 || strlen($contactDigits) > 13) {
+            $errors[] = 'Contact number must have 10 to 13 digits.';
+        }
     }
 
     if (empty($errors)) {

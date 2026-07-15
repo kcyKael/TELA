@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const confirmPassword = document.getElementById('confirm_password').value;
         const address = document.getElementById('address').value.trim();
         const contactNumber = document.getElementById('contact_number').value.trim();
+        const contactDigits = contactNumber.replace(/\D/g, '');
         const errors = [];
 
         if (fullName.length < 2 || fullName.length > 100) {
@@ -40,6 +41,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!/^[0-9+\-\s]+$/.test(contactNumber) || contactNumber.length > 20) {
             errors.push('Contact number may contain numbers, spaces, plus sign, and hyphen only.');
+        } else if (contactDigits.length < 10 || contactDigits.length > 13) {
+            errors.push('Contact number must have 10 to 13 digits.');
         }
 
         if (errors.length > 0) {
