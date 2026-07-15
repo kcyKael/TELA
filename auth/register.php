@@ -1,6 +1,8 @@
 <?php
+require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/brevo_email.php';
 
 $pageTitle = 'Register';
 $activePage = 'register';
@@ -100,7 +102,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mysqli_stmt_execute($auditStmt);
             mysqli_stmt_close($auditStmt);
 
-            $successMessage = 'Registration successful. Your account was created and is waiting for email verification.';
+            if (sendVerificationEmail($email, $fullName, $verificationToken)) {
+                $successMessage = 'Registration successful. Please check your email to verify your account.';
+            } else {
+                $successMessage = 'Registration successful, but the verification email could not be sent right now. Your account is still unverified.';
+            }
+
             $fullName = '';
             $email = '';
             $address = '';
@@ -125,7 +132,7 @@ include __DIR__ . '/../includes/header.php';
         <div class="setup-panel">
             <p class="section-label mb-2">Buyer Registration</p>
             <h1 class="h3 mb-3">Create Buyer Account</h1>
-            <p class="text-muted">Register for a TELA account. Email sending will be added in the next authentication part.</p>
+            <p class="text-muted">Register for a TELA account. A verification email will be sent after successful registration.</p>
 
             <?php if (!empty($errors)): ?>
                 <div class="alert alert-danger" role="alert">
