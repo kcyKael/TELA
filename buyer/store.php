@@ -7,6 +7,17 @@ $pageTitle = 'Store';
 $activePage = 'store';
 $errors = [];
 $products = [];
+$searchTerm = '';
+
+if (isset($_GET['q'])) {
+    $searchTerm = cleanInput($_GET['q']);
+
+    if (strlen($searchTerm) > 100) {
+        $searchTerm = substr($searchTerm, 0, 100);
+    }
+}
+
+$isSearchActive = $searchTerm !== '';
 
 function getStoreProductImage($imagePath)
 {
@@ -36,27 +47,51 @@ function getStoreProductImage($imagePath)
 $activeStatus = 'Active';
 $categoryNameFilter = PRODUCT_CATEGORY_NAME;
 
-$productSql = "
-    SELECT
-        p.product_id,
-        p.product_name,
-        p.price,
-        p.stock,
-        p.image_path,
-        c.category_name
-    FROM products p
-    INNER JOIN categories c ON p.category_id = c.category_id
-    WHERE p.status = ?
-      AND c.category_name = ?
-    ORDER BY p.product_name ASC
-";
+if ($isSearchActive) {
+    $productSql = "
+        SELECT
+            p.product_id,
+            p.product_name,
+            p.price,
+            p.stock,
+            p.image_path,
+            c.category_name
+        FROM products p
+        INNER JOIN categories c ON p.category_id = c.category_id
+        WHERE p.status = ?
+          AND c.category_name = ?
+          AND p.product_name LIKE ?
+        ORDER BY p.product_name ASC
+    ";
+} else {
+    $productSql = "
+        SELECT
+            p.product_id,
+            p.product_name,
+            p.price,
+            p.stock,
+            p.image_path,
+            c.category_name
+        FROM products p
+        INNER JOIN categories c ON p.category_id = c.category_id
+        WHERE p.status = ?
+          AND c.category_name = ?
+        ORDER BY p.product_name ASC
+    ";
+}
 
 $productStmt = mysqli_prepare($conn, $productSql);
 
 if ($productStmt === false) {
     $errors[] = 'Products could not be loaded right now.';
 } else {
-    mysqli_stmt_bind_param($productStmt, 'ss', $activeStatus, $categoryNameFilter);
+    if ($isSearchActive) {
+        $searchLike = '%' . $searchTerm . '%';
+        mysqli_stmt_bind_param($productStmt, 'sss', $activeStatus, $categoryNameFilter, $searchLike);
+    } else {
+        mysqli_stmt_bind_param($productStmt, 'ss', $activeStatus, $categoryNameFilter);
+    }
+
     mysqli_stmt_execute($productStmt);
     mysqli_stmt_bind_result($productStmt, $productId, $productName, $price, $stock, $imagePath, $categoryName);
 
@@ -84,6 +119,31 @@ include __DIR__ . '/../includes/header.php';
             <h1 class="h3 mb-3">Hoodie Store</h1>
             <p class="text-muted mb-4">Browse Active Hoodie products from TELA.</p>
 
+            <form method="get" action="<?php echo BASE_URL; ?>buyer/store.php" class="row g-2 align-items-end mb-4">
+                <div class="col-md">
+                    <label for="q" class="form-label">Search Hoodies</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="q"
+                        name="q"
+                        value="<?php echo escapeOutput($searchTerm); ?>"
+                        maxlength="100"
+                        placeholder="Search by product name"
+                    >
+                </div>
+                <div class="col-md-auto d-flex gap-2">
+                    <button type="submit" class="btn btn-dark">Search</button>
+                    <?php if ($isSearchActive): ?>
+                        <a class="btn btn-outline-secondary" href="<?php echo BASE_URL; ?>buyer/store.php">View All</a>
+                    <?php endif; ?>
+                </div>
+            </form>
+
+            <?php if ($isSearchActive): ?>
+                <p class="text-muted">Search results for "<?php echo escapeOutput($searchTerm); ?>"</p>
+            <?php endif; ?>
+
             <?php if (!empty($errors)): ?>
                 <div class="alert alert-danger" role="alert">
                     <ul class="mb-0">
@@ -95,9 +155,16 @@ include __DIR__ . '/../includes/header.php';
             <?php endif; ?>
 
             <?php if (empty($products) && empty($errors)): ?>
-                <div class="alert alert-info mb-0" role="alert">
-                    No products are available right now.
-                </div>
+                <?php if ($isSearchActive): ?>
+                    <div class="alert alert-info" role="alert">
+                        No matching Hoodie products found.
+                    </div>
+                    <a class="btn btn-outline-secondary" href="<?php echo BASE_URL; ?>buyer/store.php">View All Products</a>
+                <?php else: ?>
+                    <div class="alert alert-info mb-0" role="alert">
+                        No products are available right now.
+                    </div>
+                <?php endif; ?>
             <?php endif; ?>
 
             <?php if (!empty($products)): ?>
