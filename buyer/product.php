@@ -127,9 +127,9 @@ include __DIR__ . '/../includes/header.php';
                         <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
                             <a class="btn btn-outline-secondary" href="<?php echo BASE_URL; ?>buyer/store.php">Back to Store</a>
                             <?php if ($product['stock'] > 0): ?>
-                                <button type="button" class="btn btn-dark" disabled>Add to Cart Soon</button>
+                                <button type="button" class="btn btn-dark" disabled title="Cart coming in the next milestone">Cart Coming Soon</button>
                             <?php else: ?>
-                                <button type="button" class="btn btn-secondary" disabled>Out of Stock</button>
+                                <button type="button" class="btn btn-secondary" disabled title="This product is out of stock">Out of Stock</button>
                             <?php endif; ?>
                         </div>
                     </div>
