@@ -49,10 +49,16 @@ $userRole = $isLoggedIn ? $_SESSION['role'] : '';
                         <a class="nav-link <?php echo $activePage === 'admin' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/dashboard.php">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo BASE_URL; ?>admin/products.php">Products</a>
+                        <a class="nav-link <?php echo $activePage === 'admin_categories' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/categories.php">Categories</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo BASE_URL; ?>admin/orders.php">Orders</a>
+                        <a class="nav-link <?php echo $activePage === 'admin_products' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/products.php">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo $activePage === 'admin_inventory' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/inventory.php">Inventory</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo $activePage === 'admin_audit' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/audit_logs.php">Audit Logs</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="<?php echo BASE_URL; ?>auth/logout.php">Logout</a>
