@@ -20,6 +20,9 @@ $userRole = $isLoggedIn ? $_SESSION['role'] : '';
 
                 <?php if (!$isLoggedIn): ?>
                     <li class="nav-item">
+                        <a class="nav-link <?php echo $activePage === 'store' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>buyer/store.php">Store</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link <?php echo $activePage === 'about' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>buyer/about.php">About</a>
                     </li>
                     <li class="nav-item">
@@ -30,14 +33,12 @@ $userRole = $isLoggedIn ? $_SESSION['role'] : '';
                     </li>
                 <?php elseif ($userRole === 'buyer'): ?>
                     <li class="nav-item">
-                        <a class="nav-link <?php echo $activePage === 'store' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>buyer/store.php">Hoodies</a>
+                        <a class="nav-link <?php echo $activePage === 'store' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>buyer/store.php">Store</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link <?php echo $activePage === 'cart' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>buyer/cart.php">Cart</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo $activePage === 'orders' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>buyer/orders.php">Orders</a>
-                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link <?php echo $activePage === 'about' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>buyer/about.php">About</a>
                     </li>

@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../includes/auth_check.php';
 requireBuyer();
 $pageTitle = 'Cart';
-$activePage = 'store';
+$activePage = 'cart';
 include __DIR__ . '/../includes/header.php';
 ?>
 
