@@ -6,6 +6,19 @@ $pageTitle = 'Product Management';
 $activePage = 'admin_products';
 $errors = [];
 $products = [];
+$messageCode = $_GET['message'] ?? '';
+$successMessages = [
+    'product_deactivated' => 'Product was deactivated successfully.',
+    'product_deactivated_history' => 'Product has order history, so it was safely deactivated.',
+    'product_activated' => 'Product was activated successfully.'
+];
+$errorMessages = [
+    'invalid_action' => 'Product action could not be completed.',
+    'product_not_found' => 'Product could not be found.',
+    'already_inactive' => 'Product is already inactive.',
+    'already_active' => 'Product is already active.',
+    'action_failed' => 'Product action could not be completed right now.'
+];
 
 function getSafeProductImage($imagePath)
 {
@@ -98,6 +111,18 @@ include __DIR__ . '/../includes/header.php';
                 <a class="btn btn-dark" href="product_add.php">Add Product</a>
             </div>
 
+            <?php if ($messageCode !== '' && isset($successMessages[$messageCode])): ?>
+                <div class="alert alert-success" role="alert">
+                    <?php echo escapeOutput($successMessages[$messageCode]); ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($messageCode !== '' && isset($errorMessages[$messageCode])): ?>
+                <div class="alert alert-danger" role="alert">
+                    <?php echo escapeOutput($errorMessages[$messageCode]); ?>
+                </div>
+            <?php endif; ?>
+
             <?php if (!empty($errors)): ?>
                 <div class="alert alert-danger" role="alert">
                     <ul class="mb-0">
@@ -155,8 +180,19 @@ include __DIR__ . '/../includes/header.php';
                                     <td class="text-end">
                                         <div class="btn-group btn-group-sm" role="group" aria-label="Product actions">
                                             <a class="btn btn-outline-dark" href="product_edit.php?id=<?php echo $safeProductId; ?>">Edit</a>
-                                            <a class="btn btn-outline-secondary" href="product_status.php?id=<?php echo $safeProductId; ?>"><?php echo escapeOutput($statusActionLabel); ?></a>
-                                            <a class="btn btn-outline-danger" href="product_delete.php?id=<?php echo $safeProductId; ?>">Delete</a>
+                                            <form method="post" action="product_status.php" class="d-inline">
+                                                <input type="hidden" name="product_id" value="<?php echo $safeProductId; ?>">
+                                                <input type="hidden" name="action" value="<?php echo $product['status'] === 'Active' ? 'deactivate' : 'activate'; ?>">
+                                                <button type="submit" class="btn btn-outline-secondary"><?php echo escapeOutput($statusActionLabel); ?></button>
+                                            </form>
+                                            <?php if ($product['status'] === 'Active'): ?>
+                                                <form method="post" action="product_delete.php" class="d-inline" onsubmit="return confirm('Deactivate this product?');">
+                                                    <input type="hidden" name="product_id" value="<?php echo $safeProductId; ?>">
+                                                    <button type="submit" class="btn btn-outline-danger">Safe Delete</button>
+                                                </form>
+                                            <?php else: ?>
+                                                <button type="button" class="btn btn-outline-danger" disabled>Safe Delete</button>
+                                            <?php endif; ?>
                                         </div>
                                     </td>
                                 </tr>
