@@ -1,16 +1,140 @@
 <?php
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/functions.php';
+
 $pageTitle = 'Product Details';
 $activePage = 'store';
+$product = null;
+$productUnavailable = true;
+$productId = 0;
+
+function getProductDetailImage($imagePath)
+{
+    $fallbackImage = BASE_URL . 'assets/images/logo.png';
+    $imagePath = trim((string) $imagePath);
+
+    if ($imagePath === '') {
+        return $fallbackImage;
+    }
+
+    $cleanPath = str_replace('\\', '/', $imagePath);
+    $cleanPath = ltrim($cleanPath, '/');
+
+    if (strpos($cleanPath, PRODUCT_UPLOAD_PATH) !== 0 || strpos($cleanPath, '..') !== false) {
+        return $fallbackImage;
+    }
+
+    $fullPath = __DIR__ . '/../' . $cleanPath;
+
+    if (!is_file($fullPath)) {
+        return $fallbackImage;
+    }
+
+    return BASE_URL . $cleanPath;
+}
+
+if (isset($_GET['product_id']) && ctype_digit((string) $_GET['product_id'])) {
+    $productId = (int) $_GET['product_id'];
+}
+
+if ($productId > 0) {
+    $activeStatus = 'Active';
+    $categoryNameFilter = PRODUCT_CATEGORY_NAME;
+
+    $productSql = "
+        SELECT
+            p.product_id,
+            p.product_name,
+            p.description,
+            p.price,
+            p.stock,
+            p.image_path,
+            c.category_name
+        FROM products p
+        INNER JOIN categories c ON p.category_id = c.category_id
+        WHERE p.product_id = ?
+          AND p.status = ?
+          AND c.category_name = ?
+        LIMIT 1
+    ";
+
+    $productStmt = mysqli_prepare($conn, $productSql);
+
+    if ($productStmt !== false) {
+        mysqli_stmt_bind_param($productStmt, 'iss', $productId, $activeStatus, $categoryNameFilter);
+        mysqli_stmt_execute($productStmt);
+        mysqli_stmt_bind_result($productStmt, $foundProductId, $productName, $description, $price, $stock, $imagePath, $categoryName);
+
+        if (mysqli_stmt_fetch($productStmt)) {
+            $product = [
+                'product_id' => (int) $foundProductId,
+                'product_name' => $productName,
+                'description' => $description,
+                'price' => $price,
+                'stock' => (int) $stock,
+                'image_path' => $imagePath,
+                'category_name' => $categoryName
+            ];
+            $productUnavailable = false;
+            $pageTitle = $productName;
+        }
+
+        mysqli_stmt_close($productStmt);
+    }
+}
+
 include __DIR__ . '/../includes/header.php';
 ?>
 
 <section class="page-section">
     <div class="container">
         <div class="setup-panel">
-            <p class="section-label mb-2">Buyer Store</p>
-            <h1 class="h3 mb-3">Product Details</h1>
-            <p class="mb-0">Active Hoodie product details will be displayed here in a later part of Milestone 5.</p>
-            <a class="btn btn-outline-secondary mt-3" href="<?php echo BASE_URL; ?>buyer/store.php">Back to Store</a>
+            <?php if ($productUnavailable): ?>
+                <p class="section-label mb-2">Buyer Store</p>
+                <h1 class="h3 mb-3">Product Not Available</h1>
+                <div class="alert alert-info" role="alert">
+                    Product not found or unavailable.
+                </div>
+                <a class="btn btn-outline-secondary" href="<?php echo BASE_URL; ?>buyer/store.php">Back to Store</a>
+            <?php else: ?>
+                <?php
+                $imageSource = getProductDetailImage($product['image_path']);
+                $stockCondition = $product['stock'] > 0 ? 'In Stock' : 'Out of Stock';
+                $stockClass = $product['stock'] > 0 ? 'badge text-bg-success' : 'badge text-bg-danger';
+                ?>
+                <div class="row g-4 align-items-start">
+                    <div class="col-lg-5">
+                        <img src="<?php echo escapeOutput($imageSource); ?>" alt="<?php echo escapeOutput($product['product_name']); ?>" class="img-fluid rounded border w-100" style="max-height: 460px; object-fit: cover;">
+                    </div>
+                    <div class="col-lg-7">
+                        <p class="section-label mb-2"><?php echo escapeOutput($product['category_name']); ?></p>
+                        <h1 class="h3 mb-3"><?php echo escapeOutput($product['product_name']); ?></h1>
+                        <p class="h5 mb-3">PHP <?php echo escapeOutput(number_format((float) $product['price'], 2)); ?></p>
+                        <p class="mb-2">
+                            <span class="<?php echo $stockClass; ?>"><?php echo escapeOutput($stockCondition); ?></span>
+                        </p>
+
+                        <?php if ($product['stock'] > 0): ?>
+                            <p class="text-muted">Available stock: <?php echo (int) $product['stock']; ?></p>
+                        <?php else: ?>
+                            <p class="text-muted">This Hoodie is currently out of stock.</p>
+                        <?php endif; ?>
+
+                        <h2 class="h5 mt-4">Description</h2>
+                        <p><?php echo nl2br(escapeOutput($product['description'] !== null && $product['description'] !== '' ? $product['description'] : 'No description available.')); ?></p>
+
+                        <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
+                            <a class="btn btn-outline-secondary" href="<?php echo BASE_URL; ?>buyer/store.php">Back to Store</a>
+                            <?php if ($product['stock'] > 0): ?>
+                                <button type="button" class="btn btn-dark" disabled>Add to Cart Soon</button>
+                            <?php else: ?>
+                                <button type="button" class="btn btn-secondary" disabled>Out of Stock</button>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </section>
