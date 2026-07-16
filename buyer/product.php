@@ -21,7 +21,12 @@ function getProductDetailImage($imagePath)
     $cleanPath = str_replace('\\', '/', $imagePath);
     $cleanPath = ltrim($cleanPath, '/');
 
-    if (strpos($cleanPath, PRODUCT_UPLOAD_PATH) !== 0 || strpos($cleanPath, '..') !== false) {
+    $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+    $fileExtension = strtolower(pathinfo($cleanPath, PATHINFO_EXTENSION));
+    $hasExpectedPath = strpos($cleanPath, PRODUCT_UPLOAD_PATH) === 0 && strpos($cleanPath, '..') === false;
+    $hasAllowedExtension = in_array($fileExtension, $allowedExtensions, true);
+
+    if (!$hasExpectedPath || !$hasAllowedExtension) {
         return $fallbackImage;
     }
 
@@ -34,7 +39,7 @@ function getProductDetailImage($imagePath)
     return BASE_URL . $cleanPath;
 }
 
-if (isset($_GET['product_id']) && ctype_digit((string) $_GET['product_id'])) {
+if (isset($_GET['product_id']) && is_string($_GET['product_id']) && ctype_digit($_GET['product_id'])) {
     $productId = (int) $_GET['product_id'];
 }
 

@@ -9,7 +9,7 @@ $errors = [];
 $products = [];
 $searchTerm = '';
 
-if (isset($_GET['q'])) {
+if (isset($_GET['q']) && is_string($_GET['q'])) {
     $searchTerm = cleanInput($_GET['q']);
 
     if (strlen($searchTerm) > 100) {
@@ -31,7 +31,12 @@ function getStoreProductImage($imagePath)
     $cleanPath = str_replace('\\', '/', $imagePath);
     $cleanPath = ltrim($cleanPath, '/');
 
-    if (strpos($cleanPath, PRODUCT_UPLOAD_PATH) !== 0 || strpos($cleanPath, '..') !== false) {
+    $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+    $fileExtension = strtolower(pathinfo($cleanPath, PATHINFO_EXTENSION));
+    $hasExpectedPath = strpos($cleanPath, PRODUCT_UPLOAD_PATH) === 0 && strpos($cleanPath, '..') === false;
+    $hasAllowedExtension = in_array($fileExtension, $allowedExtensions, true);
+
+    if (!$hasExpectedPath || !$hasAllowedExtension) {
         return $fallbackImage;
     }
 
@@ -187,7 +192,7 @@ include __DIR__ . '/../includes/header.php';
                                         <span class="<?php echo $stockClass; ?>"><?php echo escapeOutput($stockCondition); ?></span>
                                     </p>
 
-                                    <div class="mt-auto d-flex gap-2">
+                                    <div class="mt-auto d-flex flex-column flex-sm-row gap-2">
                                         <a class="btn btn-outline-dark flex-fill" href="<?php echo BASE_URL; ?>buyer/product.php?product_id=<?php echo $productId; ?>">Details</a>
                                         <?php if ($product['stock'] > 0): ?>
                                             <button type="button" class="btn btn-dark flex-fill" disabled title="Cart coming in the next milestone">Cart Coming Soon</button>
