@@ -25,3 +25,6 @@ Thumbs.db
 
 
 /config/config.local.php
+
+# Test / Development Files
+/TestConsole.php
