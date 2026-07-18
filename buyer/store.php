@@ -115,6 +115,7 @@ if ($productStmt === false) {
 }
 
 include __DIR__ . '/../includes/header.php';
+$isAdminBrowsing = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 ?>
 
 <section class="page-section">
@@ -195,7 +196,15 @@ include __DIR__ . '/../includes/header.php';
                                     <div class="mt-auto d-flex flex-column flex-sm-row gap-2">
                                         <a class="btn btn-outline-dark flex-fill" href="<?php echo BASE_URL; ?>buyer/product.php?product_id=<?php echo $productId; ?>">Details</a>
                                         <?php if ($product['stock'] > 0): ?>
-                                            <button type="button" class="btn btn-dark flex-fill" disabled title="Cart coming in the next milestone">Cart Coming Soon</button>
+                                            <?php if ($isAdminBrowsing): ?>
+                                                <button type="button" class="btn btn-secondary flex-fill" disabled title="The cart is available to buyers only">Buyer Cart Only</button>
+                                            <?php else: ?>
+                                                <form method="post" action="<?php echo BASE_URL; ?>buyer/cart_add.php" class="flex-fill">
+                                                    <?php echo csrfTokenField(); ?>
+                                                    <input type="hidden" name="product_id" value="<?php echo $productId; ?>">
+                                                    <button type="submit" class="btn btn-dark w-100">Add to Cart</button>
+                                                </form>
+                                            <?php endif; ?>
                                         <?php else: ?>
                                             <button type="button" class="btn btn-secondary flex-fill" disabled title="This product is out of stock">Out of Stock</button>
                                         <?php endif; ?>

@@ -8,6 +8,21 @@ $activePage = 'cart';
 $buyerId = (int) $_SESSION['user_id'];
 $cartRowCount = 0;
 $cartLoadError = '';
+$cartFlashMessage = '';
+$cartFlashType = 'info';
+$allowedFlashTypes = ['success', 'danger', 'warning', 'info'];
+$cartFlash = $_SESSION['cart_flash'] ?? null;
+unset($_SESSION['cart_flash']);
+
+if (is_array($cartFlash)) {
+    $flashMessage = $cartFlash['message'] ?? '';
+    $flashType = $cartFlash['type'] ?? '';
+
+    if (is_string($flashMessage) && $flashMessage !== '' && in_array($flashType, $allowedFlashTypes, true)) {
+        $cartFlashMessage = $flashMessage;
+        $cartFlashType = $flashType;
+    }
+}
 
 $cartSql = 'SELECT COUNT(*) FROM cart WHERE user_id = ?';
 $cartStmt = mysqli_prepare($conn, $cartSql);
@@ -38,6 +53,12 @@ include __DIR__ . '/../includes/header.php';
         <div class="setup-panel">
             <p class="section-label mb-2">Buyer Cart</p>
             <h1 class="h3 mb-3">Cart</h1>
+
+            <?php if ($cartFlashMessage !== ''): ?>
+                <div class="alert alert-<?php echo $cartFlashType; ?>" role="alert">
+                    <?php echo escapeOutput($cartFlashMessage); ?>
+                </div>
+            <?php endif; ?>
 
             <?php if ($cartLoadError !== ''): ?>
                 <div class="alert alert-danger" role="alert">

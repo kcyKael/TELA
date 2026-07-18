@@ -90,6 +90,7 @@ if ($productId > 0) {
 }
 
 include __DIR__ . '/../includes/header.php';
+$isAdminBrowsing = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 ?>
 
 <section class="page-section">
@@ -132,7 +133,15 @@ include __DIR__ . '/../includes/header.php';
                         <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
                             <a class="btn btn-outline-secondary" href="<?php echo BASE_URL; ?>buyer/store.php">Back to Store</a>
                             <?php if ($product['stock'] > 0): ?>
-                                <button type="button" class="btn btn-dark" disabled title="Cart coming in the next milestone">Cart Coming Soon</button>
+                                <?php if ($isAdminBrowsing): ?>
+                                    <button type="button" class="btn btn-secondary" disabled title="The cart is available to buyers only">Buyer Cart Only</button>
+                                <?php else: ?>
+                                    <form method="post" action="<?php echo BASE_URL; ?>buyer/cart_add.php">
+                                        <?php echo csrfTokenField(); ?>
+                                        <input type="hidden" name="product_id" value="<?php echo (int) $product['product_id']; ?>">
+                                        <button type="submit" class="btn btn-dark w-100">Add to Cart</button>
+                                    </form>
+                                <?php endif; ?>
                             <?php else: ?>
                                 <button type="button" class="btn btn-secondary" disabled title="This product is out of stock">Out of Stock</button>
                             <?php endif; ?>
