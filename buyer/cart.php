@@ -154,6 +154,7 @@ include __DIR__ . '/../includes/header.php';
                     $isHoodie = $item['category_name'] === PRODUCT_CATEGORY_NAME;
                     $hasStock = $item['stock'] > 0;
                     $quantityWithinStock = $item['quantity'] <= $item['stock'];
+                    $canUpdateQuantity = $isActive && $isHoodie && $hasStock;
                     $isEligible = $isActive && $isHoodie && $hasStock && $quantityWithinStock;
                     $stockCondition = $hasStock ? 'In Stock' : 'Out of Stock';
                     $stockBadgeClass = $hasStock ? 'text-bg-success' : 'text-bg-danger';
@@ -212,9 +213,31 @@ include __DIR__ . '/../includes/header.php';
                                     </div>
                                 <?php endif; ?>
 
-                                <div class="d-flex flex-column flex-md-row gap-2" aria-label="Future cart item actions">
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled title="Quantity updates will be added in the next part">Update Quantity Coming Soon</button>
-                                    <button type="button" class="btn btn-outline-danger btn-sm" disabled title="Item removal will be added in a later part">Remove Coming Soon</button>
+                                <div class="d-flex flex-column flex-md-row gap-2 align-items-md-end" aria-label="Cart item actions">
+                                    <?php if ($canUpdateQuantity): ?>
+                                        <form method="post" action="<?php echo BASE_URL; ?>buyer/cart_update.php" class="d-flex flex-column flex-sm-row gap-2 align-items-sm-end">
+                                            <?php echo csrfTokenField(); ?>
+                                            <input type="hidden" name="cart_id" value="<?php echo $item['cart_id']; ?>">
+                                            <div>
+                                                <label for="quantity-<?php echo $item['cart_id']; ?>" class="form-label small mb-1">Quantity</label>
+                                                <input
+                                                    type="number"
+                                                    class="form-control form-control-sm"
+                                                    id="quantity-<?php echo $item['cart_id']; ?>"
+                                                    name="quantity"
+                                                    value="<?php echo $item['quantity']; ?>"
+                                                    min="1"
+                                                    max="<?php echo $item['stock']; ?>"
+                                                    required
+                                                    style="width: 100px;"
+                                                >
+                                            </div>
+                                            <button type="submit" class="btn btn-outline-dark btn-sm">Update Quantity</button>
+                                        </form>
+                                    <?php else: ?>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" disabled title="This cart item is unavailable">Update Unavailable</button>
+                                    <?php endif; ?>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" disabled title="Item removal will be added in Part 5">Remove Coming Soon</button>
                                 </div>
                             </div>
                         </div>
