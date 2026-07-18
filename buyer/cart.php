@@ -6,7 +6,8 @@ require_once __DIR__ . '/../config/database.php';
 $pageTitle = 'Cart';
 $activePage = 'cart';
 $buyerId = (int) $_SESSION['user_id'];
-$cartRowCount = 0;
+$cartItems = [];
+$cartTotal = 0;
 $cartLoadError = '';
 $cartFlashMessage = '';
 $cartFlashType = 'info';
@@ -24,7 +25,52 @@ if (is_array($cartFlash)) {
     }
 }
 
-$cartSql = 'SELECT COUNT(*) FROM cart WHERE user_id = ?';
+function getCartProductImage($imagePath)
+{
+    $fallbackImage = BASE_URL . 'assets/images/logo.png';
+    $imagePath = trim((string) $imagePath);
+
+    if ($imagePath === '') {
+        return $fallbackImage;
+    }
+
+    $cleanPath = str_replace('\\', '/', $imagePath);
+    $cleanPath = ltrim($cleanPath, '/');
+    $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+    $fileExtension = strtolower(pathinfo($cleanPath, PATHINFO_EXTENSION));
+    $hasExpectedPath = strpos($cleanPath, PRODUCT_UPLOAD_PATH) === 0 && strpos($cleanPath, '..') === false;
+    $hasAllowedExtension = in_array($fileExtension, $allowedExtensions, true);
+
+    if (!$hasExpectedPath || !$hasAllowedExtension) {
+        return $fallbackImage;
+    }
+
+    $fullPath = __DIR__ . '/../' . $cleanPath;
+
+    if (!is_file($fullPath)) {
+        return $fallbackImage;
+    }
+
+    return BASE_URL . $cleanPath;
+}
+
+$cartSql = '
+    SELECT
+        cart.cart_id,
+        cart.product_id,
+        cart.quantity,
+        products.product_name,
+        products.price,
+        products.stock,
+        products.image_path,
+        products.status,
+        categories.category_name
+    FROM cart
+    INNER JOIN products ON cart.product_id = products.product_id
+    INNER JOIN categories ON products.category_id = categories.category_id
+    WHERE cart.user_id = ?
+    ORDER BY cart.created_at DESC, cart.cart_id DESC
+';
 $cartStmt = mysqli_prepare($conn, $cartSql);
 
 if ($cartStmt === false) {
@@ -33,10 +79,34 @@ if ($cartStmt === false) {
     mysqli_stmt_bind_param($cartStmt, 'i', $buyerId);
 
     if (mysqli_stmt_execute($cartStmt)) {
-        mysqli_stmt_bind_result($cartStmt, $cartRowCountResult);
+        mysqli_stmt_bind_result(
+            $cartStmt,
+            $cartId,
+            $productId,
+            $quantity,
+            $productName,
+            $price,
+            $stock,
+            $imagePath,
+            $status,
+            $categoryName
+        );
 
-        if (mysqli_stmt_fetch($cartStmt)) {
-            $cartRowCount = (int) $cartRowCountResult;
+        while (mysqli_stmt_fetch($cartStmt)) {
+            $itemSubtotal = (float) $price * (int) $quantity;
+            $cartTotal += $itemSubtotal;
+            $cartItems[] = [
+                'cart_id' => (int) $cartId,
+                'product_id' => (int) $productId,
+                'quantity' => (int) $quantity,
+                'product_name' => $productName,
+                'price' => (float) $price,
+                'stock' => (int) $stock,
+                'image_path' => $imagePath,
+                'status' => $status,
+                'category_name' => $categoryName,
+                'subtotal' => $itemSubtotal
+            ];
         }
     } else {
         $cartLoadError = 'Your cart could not be loaded right now.';
@@ -64,17 +134,98 @@ include __DIR__ . '/../includes/header.php';
                 <div class="alert alert-danger" role="alert">
                     <?php echo escapeOutput($cartLoadError); ?>
                 </div>
-            <?php elseif ($cartRowCount === 0): ?>
+            <?php elseif (empty($cartItems)): ?>
                 <div class="alert alert-info" role="alert">
                     Your cart is empty.
                 </div>
                 <a class="btn btn-dark" href="<?php echo BASE_URL; ?>buyer/store.php">Browse Hoodies</a>
             <?php else: ?>
-                <div class="alert alert-info" role="alert">
-                    Your cart contains <?php echo $cartRowCount; ?> product <?php echo $cartRowCount === 1 ? 'line' : 'lines'; ?>.
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-4">
+                    <p class="text-muted mb-0">
+                        <?php echo count($cartItems); ?> product <?php echo count($cartItems) === 1 ? 'line' : 'lines'; ?> in your cart
+                    </p>
+                    <a class="btn btn-outline-dark" href="<?php echo BASE_URL; ?>buyer/store.php">Continue Shopping</a>
                 </div>
-                <p class="text-muted">Cart item details and totals will be added in a later part of this milestone.</p>
-                <a class="btn btn-outline-dark" href="<?php echo BASE_URL; ?>buyer/store.php">Continue Shopping</a>
+
+                <?php foreach ($cartItems as $item): ?>
+                    <?php
+                    $imageSource = getCartProductImage($item['image_path']);
+                    $isActive = $item['status'] === 'Active';
+                    $isHoodie = $item['category_name'] === PRODUCT_CATEGORY_NAME;
+                    $hasStock = $item['stock'] > 0;
+                    $quantityWithinStock = $item['quantity'] <= $item['stock'];
+                    $isEligible = $isActive && $isHoodie && $hasStock && $quantityWithinStock;
+                    $stockCondition = $hasStock ? 'In Stock' : 'Out of Stock';
+                    $stockBadgeClass = $hasStock ? 'text-bg-success' : 'text-bg-danger';
+                    $availabilityBadgeClass = $isEligible ? 'text-bg-success' : 'text-bg-warning';
+                    $availabilityLabel = $isEligible ? 'Eligible' : 'Unavailable';
+                    $availabilityWarnings = [];
+
+                    if (!$isActive || !$isHoodie) {
+                        $availabilityWarnings[] = 'Product unavailable.';
+                    }
+
+                    if (!$hasStock) {
+                        $availabilityWarnings[] = 'Out of Stock.';
+                    } elseif (!$quantityWithinStock) {
+                        $availabilityWarnings[] = 'Only ' . $item['stock'] . ' item(s) currently available.';
+                        $availabilityWarnings[] = 'Quantity exceeds current stock.';
+                    }
+                    ?>
+                    <div class="border rounded p-3 mb-3">
+                        <div class="row g-3 align-items-start">
+                            <div class="col-sm-4 col-md-3">
+                                <img
+                                    src="<?php echo escapeOutput($imageSource); ?>"
+                                    alt="<?php echo escapeOutput($item['product_name']); ?>"
+                                    class="img-fluid rounded border w-100"
+                                    style="height: 180px; object-fit: cover;"
+                                >
+                            </div>
+                            <div class="col-sm-8 col-md-9">
+                                <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
+                                    <div>
+                                        <p class="text-muted small mb-1"><?php echo escapeOutput($item['category_name']); ?></p>
+                                        <h2 class="h5 mb-2"><?php echo escapeOutput($item['product_name']); ?></h2>
+                                    </div>
+                                    <p class="fw-semibold mb-0">PHP <?php echo escapeOutput(number_format($item['subtotal'], 2)); ?></p>
+                                </div>
+
+                                <div class="row g-2 small mt-1">
+                                    <div class="col-6 col-lg-3"><span class="text-muted">Current price</span><br>PHP <?php echo escapeOutput(number_format($item['price'], 2)); ?></div>
+                                    <div class="col-6 col-lg-3"><span class="text-muted">Quantity</span><br><?php echo $item['quantity']; ?></div>
+                                    <div class="col-6 col-lg-3"><span class="text-muted">Current stock</span><br><?php echo $item['stock']; ?></div>
+                                    <div class="col-6 col-lg-3"><span class="text-muted">Status</span><br><?php echo escapeOutput($item['status']); ?></div>
+                                </div>
+
+                                <div class="d-flex flex-wrap gap-2 my-3">
+                                    <span class="badge <?php echo $stockBadgeClass; ?>"><?php echo escapeOutput($stockCondition); ?></span>
+                                    <span class="badge <?php echo $availabilityBadgeClass; ?>"><?php echo escapeOutput($availabilityLabel); ?></span>
+                                </div>
+
+                                <?php if (!$isEligible): ?>
+                                    <div class="alert alert-warning py-2" role="alert">
+                                        <?php foreach ($availabilityWarnings as $warning): ?>
+                                            <div><?php echo escapeOutput($warning); ?></div>
+                                        <?php endforeach; ?>
+                                        <strong>Not eligible for future checkout.</strong>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="d-flex flex-column flex-md-row gap-2" aria-label="Future cart item actions">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled title="Quantity updates will be added in the next part">Update Quantity Coming Soon</button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" disabled title="Item removal will be added in a later part">Remove Coming Soon</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+
+                <div class="border-top pt-3 d-flex justify-content-between align-items-center">
+                    <span class="h5 mb-0">Cart Total</span>
+                    <strong class="h4 mb-0">PHP <?php echo escapeOutput(number_format($cartTotal, 2)); ?></strong>
+                </div>
+                <p class="text-muted small mt-2 mb-0">Prices and availability are based on current product information.</p>
             <?php endif; ?>
         </div>
     </div>
