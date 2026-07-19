@@ -50,6 +50,10 @@ main {
     min-width: 760px;
 }
 
+.user-management-table {
+    min-width: 760px;
+}
+
 .order-items-table {
     min-width: 600px;
     table-layout: fixed;
