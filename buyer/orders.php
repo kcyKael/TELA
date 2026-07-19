@@ -90,7 +90,7 @@ include __DIR__ . '/../includes/header.php';
                 <a class="btn btn-dark" href="<?php echo BASE_URL; ?>buyer/store.php">Browse Hoodies</a>
             <?php else: ?>
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0 order-history-table">
                         <thead>
                             <tr>
                                 <th scope="col">Order Number</th>

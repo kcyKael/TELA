@@ -46,6 +46,10 @@ main {
     overflow-wrap: anywhere;
 }
 
+.order-history-table {
+    min-width: 760px;
+}
+
 .order-items-table {
     min-width: 600px;
     table-layout: fixed;
