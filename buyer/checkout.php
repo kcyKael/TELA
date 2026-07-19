@@ -334,7 +334,11 @@ include __DIR__ . '/../includes/header.php';
                 <?php endif; ?>
 
                 <?php if ($checkoutReady): ?>
-                    <form method="post" action="<?php echo BASE_URL; ?>buyer/checkout.php">
+                    <form
+                        method="post"
+                        action="<?php echo BASE_URL; ?>buyer/checkout_process.php"
+                        onsubmit="this.querySelector('button[type=submit]').disabled = true;"
+                    >
                         <?php echo csrfTokenField(); ?>
                         <?php echo checkoutTokenField(); ?>
 
@@ -351,8 +355,8 @@ include __DIR__ . '/../includes/header.php';
                             <p class="text-muted small mt-2 mb-0">Payment is simulated for classroom use. No real payment information is collected or processed.</p>
                         </fieldset>
 
-                        <button type="submit" class="btn btn-dark" disabled aria-disabled="true" title="Order processing will be enabled in Milestone 7 Part 3">
-                            Place Order (Available in Part 3)
+                        <button type="submit" class="btn btn-dark">
+                            Place Order
                         </button>
                     </form>
                 <?php else: ?>
