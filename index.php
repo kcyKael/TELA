@@ -12,16 +12,16 @@ if (isset($_SESSION['user_id'], $_SESSION['role'], $_SESSION['is_verified']) && 
 
 <section class="page-section">
     <div class="container">
-        <div class="setup-panel home-panel text-center">
-            <img class="home-logo mb-3" src="<?php echo BASE_URL; ?>assets/images/Whole_logo-tela_icon-and-text.png" alt="TELA Technology Enhanced Lifestyle Apparel logo">
-            <p class="section-label mb-2">Technology Enhanced Lifestyle Apparel</p>
-            <h1 class="display-6 mb-3">TELA</h1>
-            <p class="lead mb-3">A focused online store for Hoodies.</p>
-            <p class="text-muted mx-auto mb-4 home-intro">
-                TELA is a college educational project that demonstrates a complete online shopping workflow using procedural PHP, MySQL, Bootstrap, and secure role-based access.
-            </p>
+        <div class="setup-panel home-panel home-hero">
+            <div class="home-hero-content">
+                <p class="section-label mb-3">Technology Enhanced Lifestyle Apparel</p>
+                <h1 class="home-hero-title mb-3">Engineered<br>for every layer.</h1>
+                <p class="lead mb-3">A focused online store for Hoodies.</p>
+                <p class="text-muted mb-4 home-intro">
+                    Refined everyday essentials, designed with a modern technical edge.
+                </p>
 
-            <div class="d-flex flex-column flex-sm-row flex-wrap justify-content-center gap-2 home-actions">
+                <div class="d-flex flex-column flex-sm-row flex-wrap gap-2 home-actions">
                 <a class="btn btn-dark" href="<?php echo BASE_URL; ?>buyer/store.php">Browse Hoodies</a>
                 <a class="btn btn-outline-dark" href="<?php echo BASE_URL; ?>buyer/about.php">About TELA</a>
 
@@ -33,6 +33,7 @@ if (isset($_SESSION['user_id'], $_SESSION['role'], $_SESSION['is_verified']) && 
                     <a class="btn btn-outline-secondary" href="<?php echo BASE_URL; ?>auth/login.php">Login</a>
                     <a class="btn btn-outline-secondary" href="<?php echo BASE_URL; ?>auth/register.php">Register</a>
                 <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>

@@ -120,10 +120,12 @@ $isAdminBrowsing = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 
 <section class="page-section">
     <div class="container">
-        <div class="setup-panel">
-            <p class="section-label mb-2">Buyer Store</p>
-            <h1 class="h3 mb-3">Hoodie Store</h1>
-            <p class="text-muted mb-4">Browse Active Hoodie products from TELA.</p>
+        <div class="setup-panel store-panel">
+            <div class="store-intro mb-4">
+                <p class="section-label mb-2">Buyer Store</p>
+                <h1 class="display-title mb-2">Hoodie Store</h1>
+                <p class="text-muted mb-0">Browse Active Hoodie products from TELA.</p>
+            </div>
 
             <form method="get" action="<?php echo BASE_URL; ?>buyer/store.php" class="row g-2 align-items-end mb-4">
                 <div class="col-md">
@@ -183,18 +185,18 @@ $isAdminBrowsing = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
                         $stockClass = $product['stock'] > 0 ? 'badge text-bg-success' : 'badge text-bg-danger';
                         ?>
                         <div class="col-sm-6 col-lg-4">
-                            <div class="card h-100">
+                            <div class="card product-card h-100">
                                 <img src="<?php echo escapeOutput($imageSource); ?>" class="card-img-top product-card-image" alt="<?php echo escapeOutput($product['product_name']); ?> Hoodie product image">
                                 <div class="card-body d-flex flex-column">
-                                    <p class="text-muted small mb-1"><?php echo escapeOutput($product['category_name']); ?></p>
+                                    <p class="product-category mb-2"><?php echo escapeOutput($product['category_name']); ?></p>
                                     <h2 class="h5 card-title"><?php echo escapeOutput($product['product_name']); ?></h2>
-                                    <p class="fw-semibold mb-2"><?php echo escapeOutput(formatMoney($product['price'])); ?></p>
+                                    <p class="product-price mb-3"><?php echo escapeOutput(formatMoney($product['price'])); ?></p>
                                     <p class="mb-3">
                                         <span class="<?php echo $stockClass; ?>"><?php echo escapeOutput($stockCondition); ?></span>
                                     </p>
 
                                     <div class="mt-auto d-flex flex-column flex-sm-row gap-2">
-                                        <a class="btn btn-outline-dark flex-fill" href="<?php echo BASE_URL; ?>buyer/product.php?product_id=<?php echo $productId; ?>">Details</a>
+                                        <a class="btn btn-outline-dark flex-fill product-details-button" href="<?php echo BASE_URL; ?>buyer/product.php?product_id=<?php echo $productId; ?>">Details</a>
                                         <?php if ($product['stock'] > 0): ?>
                                             <?php if ($isAdminBrowsing): ?>
                                                 <button type="button" class="btn btn-secondary flex-fill" disabled title="The cart is available to buyers only">Buyer Cart Only</button>

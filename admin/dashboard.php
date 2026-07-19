@@ -81,7 +81,7 @@ include __DIR__ . '/../includes/header.php';
             <div class="row g-3 mb-4">
                 <?php foreach ($summaryCards as $card): ?>
                     <div class="col-12 col-sm-6 col-xl">
-                        <div class="border rounded p-3 h-100 bg-light">
+                        <div class="dashboard-metric h-100">
                             <p class="text-muted small mb-1"><?php echo escapeOutput($card['label']); ?></p>
                             <p class="h4 mb-0">
                                 <?php echo $card['value'] === null ? '-' : (int) $card['value']; ?>

@@ -3,7 +3,7 @@ $isLoggedIn = isset($_SESSION['user_id'], $_SESSION['role'], $_SESSION['is_verif
 $userRole = $isLoggedIn ? $_SESSION['role'] : '';
 $brandPath = $userRole === 'admin' ? 'admin/dashboard.php' : ($userRole === 'buyer' ? 'buyer/store.php' : 'index.php');
 ?>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark site-navbar">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="<?php echo BASE_URL . $brandPath; ?>">
             <img class="navbar-brand-logo" src="<?php echo BASE_URL; ?>assets/images/navlogo-tela_text.png" alt="TELA">

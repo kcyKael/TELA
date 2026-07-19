@@ -253,3 +253,561 @@ main {
         min-width: 9rem;
     }
 }
+
+/* Premium TELA visual system shared by buyer and admin pages. */
+:root {
+    --tela-ink: #11110f;
+    --tela-charcoal: #252521;
+    --tela-stone: #706f68;
+    --tela-line: #dedbd1;
+    --tela-paper: #f6f4ee;
+    --tela-surface: #ffffff;
+    --tela-gold: #bd941f;
+    --tela-gold-dark: #9c7612;
+    --tela-gold-soft: #f4ebcb;
+}
+
+body {
+    color: var(--tela-charcoal);
+    background-color: var(--tela-paper);
+    font-family: Inter, "Helvetica Neue", Arial, sans-serif;
+}
+
+.site-navbar {
+    min-height: 76px;
+    background-color: var(--tela-ink);
+    border-bottom: 1px solid rgba(189, 148, 31, 0.6);
+}
+
+.site-navbar .navbar-brand {
+    padding: 0.25rem 0;
+}
+
+.site-navbar .nav-link {
+    color: #dedbd1;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.site-navbar .nav-link:hover,
+.site-navbar .nav-link:focus,
+.site-navbar .nav-link.active {
+    color: var(--tela-gold);
+}
+
+.site-navbar .navbar-toggler {
+    border-color: rgba(189, 148, 31, 0.7);
+    border-radius: 2px;
+}
+
+.navbar-brand-logo {
+    width: 124px;
+    height: 36px;
+}
+
+.page-section {
+    padding: 2.5rem 0 3.5rem;
+}
+
+.setup-panel {
+    background-color: var(--tela-surface);
+    border-color: var(--tela-line);
+    border-radius: 4px;
+    box-shadow: 0 1rem 2.5rem rgba(17, 17, 15, 0.07);
+}
+
+.display-title,
+.setup-panel h1,
+.setup-panel h2 {
+    color: var(--tela-ink);
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.display-title {
+    font-size: clamp(2rem, 4vw, 3.25rem);
+    line-height: 1.05;
+}
+
+.section-label,
+.product-category {
+    color: var(--tela-gold-dark);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.member-entry {
+    border-left-color: var(--tela-gold);
+    background-color: #faf9f5;
+}
+
+.site-footer {
+    color: #d8d3c4;
+    background-color: var(--tela-ink) !important;
+    border-top: 1px solid rgba(189, 148, 31, 0.6);
+}
+
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: #faf9f5;
+    --bs-table-hover-bg: var(--tela-gold-soft);
+    border-color: var(--tela-line);
+}
+
+.table > :not(caption) > * > * {
+    padding: 0.9rem 0.75rem;
+}
+
+.table thead th {
+    color: var(--tela-stone);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.product-card {
+    overflow: hidden;
+    border: 1px solid var(--tela-line);
+    border-radius: 3px;
+    box-shadow: none;
+    transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.product-card:hover {
+    box-shadow: 0 1rem 2rem rgba(17, 17, 15, 0.12);
+    transform: translateY(-3px);
+}
+
+.product-card .card-body {
+    padding: 1.35rem;
+}
+
+.product-card .card-title {
+    color: var(--tela-ink);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.25rem;
+}
+
+.product-price {
+    color: var(--tela-ink);
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.badge {
+    border-radius: 2px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.badge.text-bg-success {
+    color: #305127 !important;
+    background-color: #e3eddb !important;
+}
+
+.badge.text-bg-danger {
+    color: #822b24 !important;
+    background-color: #f7e0dc !important;
+}
+
+.form-control,
+.form-select {
+    border-color: #c9c5b9;
+    border-radius: 2px;
+    color: var(--tela-charcoal);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--tela-gold);
+    box-shadow: 0 0 0 0.2rem rgba(189, 148, 31, 0.18);
+}
+
+.btn {
+    border-radius: 2px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 0.65rem 1rem;
+    text-transform: uppercase;
+}
+
+.btn-dark {
+    color: var(--tela-ink);
+    background-color: var(--tela-gold);
+    border-color: var(--tela-gold);
+}
+
+.btn-dark:hover,
+.btn-dark:focus,
+.btn-dark:active {
+    color: #ffffff !important;
+    background-color: var(--tela-gold-dark) !important;
+    border-color: var(--tela-gold-dark) !important;
+}
+
+.btn-outline-dark {
+    color: var(--tela-ink);
+    border-color: var(--tela-charcoal);
+}
+
+.btn-outline-dark:hover,
+.btn-outline-dark:focus {
+    color: #ffffff;
+    background-color: var(--tela-charcoal);
+    border-color: var(--tela-charcoal);
+}
+
+.btn-outline-secondary {
+    color: var(--tela-stone);
+    border-color: #aaa69b;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+    color: #ffffff;
+    background-color: var(--tela-stone);
+    border-color: var(--tela-stone);
+}
+
+.alert {
+    border-width: 1px;
+    border-radius: 3px;
+}
+
+.alert-info {
+    color: #55420c;
+    background-color: var(--tela-gold-soft);
+    border-color: #e2cf91;
+}
+
+.dashboard-metric {
+    padding: 1.25rem;
+    background-color: #faf9f5;
+    border: 1px solid var(--tela-line);
+    border-top: 3px solid var(--tela-gold);
+    border-radius: 3px;
+}
+
+.dashboard-metric .h4 {
+    color: var(--tela-ink);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.85rem;
+}
+
+/* Dark digital atelier theme shared by the storefront and admin workspace. */
+body {
+    color: #ece9df;
+    background-color: #10110f;
+}
+
+.page-section {
+    background-color: #10110f;
+}
+
+.setup-panel {
+    background-color: #191a17;
+    border-color: #403f38;
+    box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.35);
+}
+
+.display-title,
+.setup-panel h1,
+.setup-panel h2,
+.setup-panel h3,
+.setup-panel .h3,
+.setup-panel .h4,
+.setup-panel .h5 {
+    color: #f5f2e9;
+}
+
+.text-muted {
+    color: #aaa79c !important;
+}
+
+.store-intro {
+    background-color: #0d0e0c;
+}
+
+.store-panel .form-label {
+    color: #d9d4c6;
+}
+
+.form-control,
+.form-select {
+    color: #f2eee2;
+    background-color: #10110f;
+    border-color: #4a4941;
+}
+
+.form-control::placeholder {
+    color: #7e7d75;
+}
+
+.form-control:focus,
+.form-select:focus {
+    color: #ffffff;
+    background-color: #10110f;
+}
+
+.product-card {
+    background-color: #151613;
+    border-color: #403f38;
+}
+
+.product-card .card-title,
+.product-price {
+    color: #f7f3e8;
+}
+
+.product-card-image {
+    background-color: #0c0d0b;
+    border-bottom: 1px solid #403f38;
+}
+
+.product-card:hover {
+    border-color: rgba(189, 148, 31, 0.75);
+    box-shadow: 0 1.2rem 2.5rem rgba(0, 0, 0, 0.45);
+}
+
+.table {
+    --bs-table-color: #ece9df;
+    --bs-table-striped-color: #ece9df;
+    --bs-table-hover-color: #fffaf0;
+    --bs-table-striped-bg: #20211d;
+    --bs-table-hover-bg: #2b281c;
+    border-color: #403f38;
+}
+
+.table thead th {
+    color: #d8be73;
+}
+
+.dashboard-metric {
+    background-color: #20211d;
+    border-color: #403f38;
+}
+
+.dashboard-metric .h4 {
+    color: #f7f3e8;
+}
+
+.member-entry {
+    background-color: #20211d;
+}
+
+.btn-outline-dark {
+    color: #e9e4d7;
+    border-color: #8b887e;
+}
+
+.btn-outline-dark:hover,
+.btn-outline-dark:focus {
+    color: var(--tela-ink);
+    background-color: #f2eee2;
+    border-color: #f2eee2;
+}
+
+.btn-outline-secondary {
+    color: #c5c0b3;
+    border-color: #69675f;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+    color: var(--tela-ink);
+    background-color: #c5c0b3;
+    border-color: #c5c0b3;
+}
+
+.home-hero {
+    position: relative;
+    min-height: 590px;
+    max-width: 1240px;
+    padding: 0;
+    overflow: hidden;
+    background-color: #0c0d0b;
+    background-image: url('../images/tela-hoodie-hero.png');
+    background-position: center;
+    background-size: cover;
+    border-color: #514a35;
+}
+
+.home-hero-content {
+    width: min(100%, 560px);
+    min-height: 590px;
+    padding: clamp(2rem, 6vw, 5.5rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: rgba(12, 13, 11, 0.46);
+}
+
+.home-hero-title {
+    color: #fffaf0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(2.8rem, 5vw, 5rem);
+    line-height: 0.94;
+}
+
+.home-hero .lead {
+    color: #eee9dd;
+}
+
+.home-hero .home-intro {
+    max-width: 390px;
+}
+
+.home-hero .section-label {
+    color: #d8be73;
+}
+
+@media (max-width: 767.98px) {
+    .home-hero,
+    .home-hero-content {
+        min-height: 520px;
+    }
+
+    .home-hero {
+        background-position: 62% center;
+    }
+
+    .home-hero-content {
+        background-color: rgba(12, 13, 11, 0.64);
+    }
+}
+
+/* Storefront presentation: luxury material palette with precise technical details. */
+.store-panel {
+    max-width: 1240px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.store-intro {
+    position: relative;
+    padding: 2.5rem 2.5rem 2.25rem;
+    color: #f5f2e9;
+    background-color: var(--tela-ink);
+    border-bottom: 1px solid var(--tela-gold);
+}
+
+.store-intro::after {
+    position: absolute;
+    right: 2.5rem;
+    bottom: 1.1rem;
+    width: 132px;
+    height: 1px;
+    content: "";
+    background-color: var(--tela-gold);
+    box-shadow: 0 -8px 0 rgba(189, 148, 31, 0.35), 0 -16px 0 rgba(189, 148, 31, 0.15);
+}
+
+.store-intro .display-title {
+    color: #ffffff;
+    font-size: clamp(2.2rem, 4vw, 3.6rem);
+}
+
+.store-intro .text-muted {
+    color: #d3cdbd !important;
+}
+
+.store-panel > form,
+.store-panel > .text-muted,
+.store-panel > .alert,
+.store-panel > a {
+    margin-right: 2.5rem;
+    margin-left: 2.5rem;
+}
+
+.store-panel > .row {
+    width: auto;
+    padding-right: 2.5rem;
+    padding-left: 2.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.store-panel .form-label {
+    color: var(--tela-ink);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.store-panel .form-control {
+    min-height: 44px;
+}
+
+.store-panel .product-card {
+    border-color: #d4d0c4;
+}
+
+.product-card-image {
+    aspect-ratio: 1 / 1;
+    background-color: #eeece5;
+}
+
+.product-card .card-body {
+    position: relative;
+    padding: 1.5rem;
+}
+
+.product-card .card-body::before {
+    display: block;
+    width: 28px;
+    height: 2px;
+    margin-bottom: 1rem;
+    content: "";
+    background-color: var(--tela-gold);
+}
+
+.product-card .card-title {
+    min-height: 3rem;
+    margin-bottom: 0.75rem;
+}
+
+.product-card .badge {
+    padding: 0.4rem 0.5rem;
+}
+
+.product-card .btn {
+    min-height: 40px;
+    padding: 0.45rem 0.55rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.025em;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+.product-details-button {
+    font-size: 0.64rem !important;
+}
+
+@media (max-width: 767.98px) {
+    .store-intro {
+        padding: 2rem 1.25rem;
+    }
+
+    .store-intro::after {
+        right: 1.25rem;
+    }
+
+    .store-panel > form,
+    .store-panel > .text-muted,
+    .store-panel > .alert,
+    .store-panel > a {
+        margin-right: 1.25rem;
+        margin-left: 1.25rem;
+    }
+
+    .store-panel > .row {
+        padding-right: 1.25rem;
+        padding-left: 1.25rem;
+    }
+}
