@@ -233,7 +233,7 @@ include __DIR__ . '/../includes/header.php';
                 <section class="border-bottom pb-4 mb-4" aria-labelledby="orderItemsHeading">
                     <h2 class="h5 mb-3" id="orderItemsHeading">Ordered Items</h2>
                     <div class="table-responsive">
-                        <table class="table align-middle mb-0">
+                        <table class="table align-middle mb-0 order-items-table">
                             <thead>
                                 <tr>
                                     <th scope="col">Product</th>

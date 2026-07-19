@@ -284,7 +284,7 @@ include __DIR__ . '/../includes/header.php';
                                             <p class="text-muted small mb-1"><?php echo escapeOutput($item['category_name']); ?></p>
                                             <h3 class="h6 mb-2"><?php echo escapeOutput($item['product_name']); ?></h3>
                                         </div>
-                                        <p class="fw-semibold mb-0">PHP <?php echo escapeOutput(number_format($item['subtotal'], 2)); ?></p>
+                                        <p class="fw-semibold mb-0 flex-shrink-0 text-md-end">PHP <?php echo escapeOutput(number_format($item['subtotal'], 2)); ?></p>
                                     </div>
 
                                     <div class="row g-2 small mt-1">

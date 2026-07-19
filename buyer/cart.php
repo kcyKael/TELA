@@ -189,7 +189,7 @@ include __DIR__ . '/../includes/header.php';
                                         <p class="text-muted small mb-1"><?php echo escapeOutput($item['category_name']); ?></p>
                                         <h2 class="h5 mb-2"><?php echo escapeOutput($item['product_name']); ?></h2>
                                     </div>
-                                    <p class="fw-semibold mb-0">PHP <?php echo escapeOutput(number_format($item['subtotal'], 2)); ?></p>
+                                    <p class="fw-semibold mb-0 flex-shrink-0 text-md-end">PHP <?php echo escapeOutput(number_format($item['subtotal'], 2)); ?></p>
                                 </div>
 
                                 <div class="row g-2 small mt-1">
@@ -209,7 +209,7 @@ include __DIR__ . '/../includes/header.php';
                                         <?php foreach ($availabilityWarnings as $warning): ?>
                                             <div><?php echo escapeOutput($warning); ?></div>
                                         <?php endforeach; ?>
-                                        <strong>Not eligible for future checkout.</strong>
+                                        <strong>Not eligible for checkout.</strong>
                                     </div>
                                 <?php endif; ?>
 
