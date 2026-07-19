@@ -6,6 +6,13 @@ require_once __DIR__ . '/../config/database.php';
 $pageTitle = 'User Management';
 $activePage = 'admin_users';
 $users = [];
+$userManagementSuccess = $_SESSION['user_management_success'] ?? '';
+unset($_SESSION['user_management_success']);
+
+if (!is_string($userManagementSuccess)) {
+    $userManagementSuccess = '';
+}
+
 $usersLoadError = '';
 
 $usersSql = '
@@ -81,6 +88,12 @@ include __DIR__ . '/../includes/header.php';
                 </div>
                 <a class="btn btn-dark" href="<?php echo BASE_URL; ?>admin/user_add.php">Add Admin</a>
             </div>
+
+            <?php if ($userManagementSuccess !== ''): ?>
+                <div class="alert alert-success" role="status">
+                    <?php echo escapeOutput($userManagementSuccess); ?>
+                </div>
+            <?php endif; ?>
 
             <?php if ($usersLoadError !== ''): ?>
                 <div class="alert alert-warning mb-0" role="alert">
