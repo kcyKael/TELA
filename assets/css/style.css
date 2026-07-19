@@ -26,6 +26,12 @@ main {
     border-radius: 4px;
 }
 
+.navbar-brand-logo {
+    width: 112px;
+    height: 32px;
+    object-fit: contain;
+}
+
 .nav-logout-button {
     width: 100%;
     border: 0;
@@ -63,6 +69,18 @@ main {
 .home-panel,
 .about-panel {
     max-width: 960px;
+}
+
+.home-logo {
+    width: 112px;
+    height: 112px;
+    object-fit: contain;
+}
+
+.about-logo {
+    width: 160px;
+    height: 160px;
+    object-fit: contain;
 }
 
 .home-intro {
