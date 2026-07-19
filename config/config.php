@@ -92,11 +92,13 @@ if (!defined('GROUP_NAME')) {
 }
 
 if (!defined('BASE_URL')) {
-    define('BASE_URL', '/TELA/');
+    $defaultBaseUrl = APP_ENV === 'production' ? '/' : '/TELA/';
+    define('BASE_URL', telaEnvironmentValue('TELA_BASE_URL', $defaultBaseUrl));
 }
 
 if (!defined('APP_BASE_URL')) {
-    define('APP_BASE_URL', 'http://localhost/TELA');
+    $defaultAppBaseUrl = APP_ENV === 'production' ? 'https://tela.kcykae.dev' : 'http://localhost/TELA';
+    define('APP_BASE_URL', telaEnvironmentValue('TELA_APP_BASE_URL', $defaultAppBaseUrl));
 }
 
 if (!defined('PRODUCT_CATEGORY_NAME')) {

@@ -16,4 +16,8 @@ define('APP_BASE_URL', 'http://localhost/TELA');
 define('BASE_URL', '/TELA/');
 
 // Production may instead provide TELA_APP_ENV, TELA_DB_HOST, TELA_DB_USER,
-// TELA_DB_PASSWORD, and TELA_DB_NAME through server environment variables.
+// TELA_DB_PASSWORD, TELA_DB_NAME, TELA_APP_BASE_URL, and TELA_BASE_URL
+// through server environment variables.
+// For https://tela.kcykae.dev use:
+// TELA_APP_BASE_URL=https://tela.kcykae.dev
+// TELA_BASE_URL=/
