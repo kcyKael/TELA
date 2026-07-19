@@ -439,8 +439,9 @@ try {
     }
 
     $transactionStarted = false;
-    $_SESSION['recent_order_id'] = $orderId;
-    checkoutProcessRedirect('Your order was placed successfully.', 'success');
+    unset($_SESSION['recent_order_id']);
+    $orderSuccessPath = rtrim(APP_BASE_URL, '/') . '/buyer/order_success.php?order_id=' . rawurlencode((string) $orderId);
+    redirectTo($orderSuccessPath);
 } catch (Throwable $exception) {
     if ($transactionStarted) {
         try {
