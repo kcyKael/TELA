@@ -83,22 +83,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         $checkSql = 'SELECT user_id FROM users WHERE email = ? LIMIT 1';
-        $checkStmt = mysqli_prepare($conn, $checkSql);
 
-        if ($checkStmt === false) {
-            $errors[] = 'Admin account could not be created right now.';
-        } elseif (!mysqli_stmt_bind_param($checkStmt, 's', $email)) {
-            $errors[] = 'Admin account could not be created right now.';
-            mysqli_stmt_close($checkStmt);
-        } elseif (!mysqli_stmt_execute($checkStmt) || !mysqli_stmt_store_result($checkStmt)) {
-            $errors[] = 'Admin account could not be created right now.';
-            mysqli_stmt_close($checkStmt);
-        } else {
-            if (mysqli_stmt_num_rows($checkStmt) > 0) {
-                $errors[] = 'Email address is already in use.';
+        try {
+            $checkStmt = mysqli_prepare($conn, $checkSql);
+
+            if ($checkStmt === false) {
+                $errors[] = 'Admin account could not be created right now.';
+            } elseif (!mysqli_stmt_bind_param($checkStmt, 's', $email)) {
+                $errors[] = 'Admin account could not be created right now.';
+                mysqli_stmt_close($checkStmt);
+            } elseif (!mysqli_stmt_execute($checkStmt) || !mysqli_stmt_store_result($checkStmt)) {
+                $errors[] = 'Admin account could not be created right now.';
+                mysqli_stmt_close($checkStmt);
+            } else {
+                if (mysqli_stmt_num_rows($checkStmt) > 0) {
+                    $errors[] = 'Email address is already in use.';
+                }
+
+                mysqli_stmt_close($checkStmt);
             }
-
-            mysqli_stmt_close($checkStmt);
+        } catch (Throwable $exception) {
+            $errors[] = 'Admin account could not be created right now.';
+            error_log('Admin email duplicate check failed for acting admin user ID ' . $actingAdminId . '.');
         }
     }
 
@@ -173,7 +179,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $activity = 'Add Admin';
             $description = 'Created verified administrator account ID ' . $newUserId . ' with email ' . $email . '.';
-            $ipAddress = $_SERVER['REMOTE_ADDR'] ?? '';
+            $ipAddress = isset($_SERVER['REMOTE_ADDR']) && is_string($_SERVER['REMOTE_ADDR'])
+                ? substr($_SERVER['REMOTE_ADDR'], 0, 45)
+                : '';
 
             if (!mysqli_stmt_bind_param($auditStmt, 'isss', $actingAdminId, $activity, $description, $ipAddress)) {
                 mysqli_stmt_close($auditStmt);
@@ -200,7 +208,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if ($transactionStarted) {
-                mysqli_rollback($conn);
+                try {
+                    mysqli_rollback($conn);
+                } catch (Throwable $rollbackException) {
+                    // The original failure is reported with a safe message below.
+                }
             }
 
             if ($duplicateEmailFailure) {

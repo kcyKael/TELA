@@ -94,7 +94,7 @@ if ($targetUserId === 0) {
             LIMIT 1
         ';
         $loadStmt = mysqli_prepare($conn, $loadSql);
-    
+
         if ($loadStmt === false) {
             $targetLoadError = 'User could not be loaded.';
         } elseif (!mysqli_stmt_bind_param($loadStmt, 'i', $targetUserId)) {
@@ -118,7 +118,7 @@ if ($targetUserId === 0) {
         } else {
             $loadFetchResult = mysqli_stmt_fetch($loadStmt);
             mysqli_stmt_close($loadStmt);
-    
+
             if ($loadFetchResult !== true) {
                 $targetLoadError = 'User could not be loaded.';
             } else {
@@ -218,7 +218,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $targetAvailable) {
 
         try {
             $duplicateStmt = mysqli_prepare($conn, $duplicateSql);
-    
+
             if ($duplicateStmt === false) {
                 $errors[] = 'Admin account could not be updated right now.';
             } elseif (!mysqli_stmt_bind_param($duplicateStmt, 'si', $email, $targetUserId)) {
@@ -231,7 +231,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $targetAvailable) {
                 if (mysqli_stmt_num_rows($duplicateStmt) > 0) {
                     $errors[] = 'Email address is already in use.';
                 }
-    
+
                 mysqli_stmt_close($duplicateStmt);
             }
         } catch (Throwable $exception) {

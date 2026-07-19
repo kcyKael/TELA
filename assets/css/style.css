@@ -50,8 +50,12 @@ main {
     min-width: 760px;
 }
 
+.user-management-panel {
+    max-width: 1100px;
+}
+
 .user-management-table {
-    min-width: 760px;
+    min-width: 950px;
 }
 
 .order-items-table {

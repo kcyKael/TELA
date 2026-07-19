@@ -30,44 +30,51 @@ $usersSql = '
         users.created_at DESC,
         users.user_id DESC
 ';
-$usersStmt = mysqli_prepare($conn, $usersSql);
 
-if ($usersStmt === false) {
-    $usersLoadError = 'User accounts could not be loaded right now.';
-} elseif (!mysqli_stmt_execute($usersStmt)) {
-    $usersLoadError = 'User accounts could not be loaded right now.';
-    mysqli_stmt_close($usersStmt);
-} elseif (!mysqli_stmt_bind_result(
-    $usersStmt,
-    $userId,
-    $fullName,
-    $email,
-    $contactNumber,
-    $role,
-    $isVerified,
-    $createdAt
-)) {
-    $usersLoadError = 'User accounts could not be loaded right now.';
-    mysqli_stmt_close($usersStmt);
-} else {
-    while (($userFetchResult = mysqli_stmt_fetch($usersStmt)) === true) {
-        $users[] = [
-            'user_id' => (int) $userId,
-            'full_name' => $fullName,
-            'email' => $email,
-            'contact_number' => $contactNumber,
-            'role' => $role,
-            'is_verified' => (int) $isVerified,
-            'created_at' => $createdAt
-        ];
-    }
+try {
+    $usersStmt = mysqli_prepare($conn, $usersSql);
 
-    mysqli_stmt_close($usersStmt);
-
-    if ($userFetchResult === false) {
-        $users = [];
+    if ($usersStmt === false) {
         $usersLoadError = 'User accounts could not be loaded right now.';
+    } elseif (!mysqli_stmt_execute($usersStmt)) {
+        $usersLoadError = 'User accounts could not be loaded right now.';
+        mysqli_stmt_close($usersStmt);
+    } elseif (!mysqli_stmt_bind_result(
+        $usersStmt,
+        $userId,
+        $fullName,
+        $email,
+        $contactNumber,
+        $role,
+        $isVerified,
+        $createdAt
+    )) {
+        $usersLoadError = 'User accounts could not be loaded right now.';
+        mysqli_stmt_close($usersStmt);
+    } else {
+        while (($userFetchResult = mysqli_stmt_fetch($usersStmt)) === true) {
+            $users[] = [
+                'user_id' => (int) $userId,
+                'full_name' => $fullName,
+                'email' => $email,
+                'contact_number' => $contactNumber,
+                'role' => $role,
+                'is_verified' => (int) $isVerified,
+                'created_at' => $createdAt
+            ];
+        }
+
+        mysqli_stmt_close($usersStmt);
+
+        if ($userFetchResult === false) {
+            $users = [];
+            $usersLoadError = 'User accounts could not be loaded right now.';
+        }
     }
+} catch (Throwable $exception) {
+    $users = [];
+    $usersLoadError = 'User accounts could not be loaded right now.';
+    error_log('Admin user listing could not be loaded.');
 }
 
 $roleBadgeClasses = [
@@ -80,7 +87,7 @@ include __DIR__ . '/../includes/header.php';
 
 <section class="page-section">
     <div class="container">
-        <div class="setup-panel">
+        <div class="setup-panel user-management-panel">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
                 <div>
                     <p class="section-label mb-2">Admin Management</p>
@@ -108,13 +115,13 @@ include __DIR__ . '/../includes/header.php';
                     <table class="table table-hover align-middle mb-0 user-management-table">
                         <thead>
                             <tr>
-                                <th scope="col">Full Name</th>
-                                <th scope="col">Email</th>
-                                <th scope="col">Role</th>
-                                <th scope="col">Verification</th>
-                                <th scope="col">Contact Number</th>
-                                <th scope="col">Created Date</th>
-                                <th scope="col" class="text-end">Action</th>
+                                <th scope="col" class="text-nowrap">Full Name</th>
+                                <th scope="col" class="text-nowrap">Email</th>
+                                <th scope="col" class="text-nowrap">Role</th>
+                                <th scope="col" class="text-nowrap">Verification</th>
+                                <th scope="col" class="text-nowrap">Contact Number</th>
+                                <th scope="col" class="text-nowrap">Created Date</th>
+                                <th scope="col" class="text-end text-nowrap">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -139,8 +146,8 @@ include __DIR__ . '/../includes/header.php';
                                             <?php echo escapeOutput($verificationLabel); ?>
                                         </span>
                                     </td>
-                                    <td><?php echo escapeOutput($user['contact_number']); ?></td>
-                                    <td><?php echo escapeOutput($user['created_at']); ?></td>
+                                    <td class="text-nowrap"><?php echo escapeOutput($user['contact_number']); ?></td>
+                                    <td class="text-nowrap"><?php echo escapeOutput($user['created_at']); ?></td>
                                     <td class="text-end">
                                         <?php if ($user['role'] === 'admin'): ?>
                                             <a class="btn btn-sm btn-outline-dark text-nowrap" href="<?php echo BASE_URL; ?>admin/user_edit.php?user_id=<?php echo (int) $user['user_id']; ?>">Edit</a>
