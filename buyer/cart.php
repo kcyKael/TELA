@@ -237,7 +237,13 @@ include __DIR__ . '/../includes/header.php';
                                     <?php else: ?>
                                         <button type="button" class="btn btn-outline-secondary btn-sm" disabled title="This cart item is unavailable">Update Unavailable</button>
                                     <?php endif; ?>
-                                    <button type="button" class="btn btn-outline-danger btn-sm" disabled title="Item removal will be added in Part 5">Remove Coming Soon</button>
+                                    <form method="post" action="<?php echo BASE_URL; ?>buyer/cart_remove.php" onsubmit="return confirm('Remove this item from your cart?');">
+                                        <?php echo csrfTokenField(); ?>
+                                        <input type="hidden" name="cart_id" value="<?php echo $item['cart_id']; ?>">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            Remove Item
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
