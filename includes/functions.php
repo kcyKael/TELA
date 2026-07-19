@@ -67,3 +67,41 @@ function csrfFailure($trustedRedirectPath)
 {
     redirectTo($trustedRedirectPath);
 }
+
+function generateCheckoutToken()
+{
+    if (
+        !isset($_SESSION['checkout_token']) ||
+        !is_string($_SESSION['checkout_token']) ||
+        $_SESSION['checkout_token'] === ''
+    ) {
+        $_SESSION['checkout_token'] = bin2hex(random_bytes(32));
+    }
+
+    return $_SESSION['checkout_token'];
+}
+
+function checkoutTokenField()
+{
+    $checkoutToken = generateCheckoutToken();
+    $escapedToken = htmlspecialchars($checkoutToken, ENT_QUOTES, 'UTF-8');
+
+    return '<input type="hidden" name="checkout_token" value="' . $escapedToken . '">';
+}
+
+function verifyCheckoutToken()
+{
+    $submittedToken = $_POST['checkout_token'] ?? '';
+    $storedToken = $_SESSION['checkout_token'] ?? '';
+
+    if (
+        !is_string($submittedToken) ||
+        !is_string($storedToken) ||
+        $submittedToken === '' ||
+        $storedToken === ''
+    ) {
+        return false;
+    }
+
+    return hash_equals($storedToken, $submittedToken);
+}
