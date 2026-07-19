@@ -346,76 +346,98 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $productFound) {
             $newImagePath = $oldImagePath;
             $newImageFullPath = '';
             $newImageMoved = false;
+            $changedFields = [];
 
-            if ($imageValidation['has_upload']) {
-                $newImagePath = $imageValidation['relative_path'];
-                $newImageFullPath = $imageValidation['full_path'];
-                $newImageMoved = move_uploaded_file($_FILES['image']['tmp_name'], $newImageFullPath);
-
-                if (!$newImageMoved) {
-                    $errors[] = 'Replacement image could not be saved.';
-                }
+            if ((int) $product['category_id'] !== $categoryId) {
+                $changedFields[] = 'category';
             }
 
-            if (empty($errors)) {
-                $updateSql = 'UPDATE products SET category_id = ?, product_name = ?, description = ?, price = ?, stock = ?, image_path = ?, status = ? WHERE product_id = ?';
-                $updateStmt = mysqli_prepare($conn, $updateSql);
+            if ((string) $product['product_name'] !== $productName) {
+                $changedFields[] = 'name';
+            }
 
-                if ($updateStmt === false) {
-                    if ($newImageMoved && is_file($newImageFullPath)) {
-                        unlink($newImageFullPath);
+            if ((string) $product['description'] !== $description) {
+                $changedFields[] = 'description';
+            }
+
+            if (round($oldPriceValue, 2) !== round($priceValue, 2)) {
+                $changedFields[] = 'price';
+            }
+
+            if ($oldStockValue !== $stockValue) {
+                $changedFields[] = 'stock';
+            }
+
+            if ($oldStatus !== $status) {
+                $changedFields[] = 'status';
+            }
+
+            if ($imageValidation['has_upload']) {
+                $changedFields[] = 'image';
+            }
+
+            if (empty($changedFields)) {
+                $successMessage = 'No changes were made.';
+            } else {
+                if ($imageValidation['has_upload']) {
+                    $newImagePath = $imageValidation['relative_path'];
+                    $newImageFullPath = $imageValidation['full_path'];
+                    $newImageMoved = move_uploaded_file($_FILES['image']['tmp_name'], $newImageFullPath);
+
+                    if (!$newImageMoved) {
+                        $errors[] = 'Replacement image could not be saved.';
                     }
+                }
 
-                    $errors[] = 'Product could not be updated right now.';
-                } else {
-                    mysqli_stmt_bind_param($updateStmt, 'issdissi', $categoryId, $productName, $description, $priceValue, $stockValue, $newImagePath, $status, $productId);
+                if (empty($errors)) {
+                    $updateSql = 'UPDATE products SET category_id = ?, product_name = ?, description = ?, price = ?, stock = ?, image_path = ?, status = ? WHERE product_id = ?';
+                    $updateStmt = mysqli_prepare($conn, $updateSql);
 
-                    if (mysqli_stmt_execute($updateStmt)) {
-                        logProductAction($conn, 'Edit Product', 'Admin edited product: ' . $productName);
-
-                        if (round($oldPriceValue, 2) !== round($priceValue, 2)) {
-                            logProductAction($conn, 'Change Price', 'Admin changed price of ' . $productName . ' from ' . number_format($oldPriceValue, 2, '.', '') . ' to ' . number_format($priceValue, 2, '.', ''));
-                        }
-
-                        if ($oldStockValue !== $stockValue) {
-                            logProductAction($conn, 'Update Stock', 'Admin updated stock of ' . $productName . ' from ' . $oldStockValue . ' to ' . $stockValue);
-                        }
-
-                        if ($oldStatus !== $status && $status === 'Inactive') {
-                            logProductAction($conn, 'Deactivate Product', 'Admin deactivated product: ' . $productName);
-                        } elseif ($oldStatus !== $status && $status === 'Active') {
-                            logProductAction($conn, 'Activate Product', 'Admin activated product: ' . $productName);
-                        }
-
-                        if ($newImageMoved) {
-                            $oldImageFullPath = getSafeProductImageFullPath($oldImagePath);
-
-                            if ($oldImageFullPath !== '' && $oldImageFullPath !== $newImageFullPath) {
-                                unlink($oldImageFullPath);
-                            }
-                        }
-
-                        $successMessage = 'Product updated successfully.';
-                        $product = loadProduct($conn, $productId);
-
-                        if ($product !== null) {
-                            $categoryId = $product['category_id'];
-                            $productName = $product['product_name'];
-                            $description = $product['description'];
-                            $price = number_format((float) $product['price'], 2, '.', '');
-                            $stock = (string) $product['stock'];
-                            $status = $product['status'];
-                            $currentImagePath = $product['image_path'];
-                        }
-                    } else {
+                    if ($updateStmt === false) {
                         if ($newImageMoved && is_file($newImageFullPath)) {
                             unlink($newImageFullPath);
                         }
 
                         $errors[] = 'Product could not be updated right now.';
-                    }
+                    } else {
+                        mysqli_stmt_bind_param($updateStmt, 'issdissi', $categoryId, $productName, $description, $priceValue, $stockValue, $newImagePath, $status, $productId);
+                        $updateSucceeded = mysqli_stmt_execute($updateStmt) && mysqli_stmt_affected_rows($updateStmt) === 1;
 
-                    mysqli_stmt_close($updateStmt);
+                        if ($updateSucceeded) {
+                            $auditDescription = 'Updated product ID ' . $productId . '. Changed fields: ' .
+                                implode(', ', $changedFields) . '.';
+                            logProductAction($conn, 'Update Product', $auditDescription);
+
+                            if ($newImageMoved) {
+                                $oldImageFullPath = getSafeProductImageFullPath($oldImagePath);
+
+                                if ($oldImageFullPath !== '' && $oldImageFullPath !== $newImageFullPath) {
+                                    unlink($oldImageFullPath);
+                                }
+                            }
+
+                            $successMessage = 'Product updated successfully.';
+                            $product = loadProduct($conn, $productId);
+
+                            if ($product !== null) {
+                                $categoryId = $product['category_id'];
+                                $productName = $product['product_name'];
+                                $description = $product['description'];
+                                $price = number_format((float) $product['price'], 2, '.', '');
+                                $stock = (string) $product['stock'];
+                                $status = $product['status'];
+                                $currentImagePath = $product['image_path'];
+                            }
+                        } else {
+                            if ($newImageMoved && is_file($newImageFullPath)) {
+                                unlink($newImageFullPath);
+                            }
+
+                            $errors[] = 'Product could not be updated right now.';
+                        }
+
+                        mysqli_stmt_close($updateStmt);
+                    }
                 }
             }
         }

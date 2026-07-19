@@ -95,3 +95,37 @@ main {
 .site-footer {
     margin-top: 3rem;
 }
+
+.report-panel,
+.dashboard-panel {
+    max-width: 1200px;
+}
+
+.inventory-report-table {
+    min-width: 950px;
+}
+
+.audit-report-table {
+    min-width: 1150px;
+}
+
+.audit-description {
+    min-width: 260px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.audit-actor {
+    min-width: 180px;
+}
+
+.audit-email {
+    min-width: 220px;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 575.98px) {
+    .dashboard-quick-links .btn {
+        width: 100%;
+    }
+}

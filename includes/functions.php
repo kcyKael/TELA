@@ -105,3 +105,36 @@ function verifyCheckoutToken()
 
     return hash_equals($storedToken, $submittedToken);
 }
+
+function formatDatabaseDate($dateValue)
+{
+    if (!is_string($dateValue) || trim($dateValue) === '') {
+        return '-';
+    }
+
+    $dateValue = trim($dateValue);
+    $dateParts = [];
+
+    if (preg_match('/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/', $dateValue, $dateParts) !== 1) {
+        return '-';
+    }
+
+    $year = (int) $dateParts[1];
+    $month = (int) $dateParts[2];
+    $day = (int) $dateParts[3];
+    $hour = (int) $dateParts[4];
+    $minute = (int) $dateParts[5];
+    $second = (int) $dateParts[6];
+
+    if (!checkdate($month, $day, $year) || $hour > 23 || $minute > 59 || $second > 59) {
+        return '-';
+    }
+
+    $timestamp = strtotime($dateValue);
+
+    if ($timestamp === false) {
+        return '-';
+    }
+
+    return date('M j, Y g:i A', $timestamp);
+}
