@@ -1,0 +1,4 @@
+# Block executable scripts while allowing normal image files to be served.
+<FilesMatch "\.(php[0-9]?|phtml|phar|cgi|pl|py|sh|js|html?|shtml)$">
+    Require all denied
+</FilesMatch>

@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../includes/auth_check.php';
+requireAdmin();
 require_once __DIR__ . '/../config/database.php';
 
 $pageTitle = 'Add Product';
@@ -15,31 +16,47 @@ $price = '';
 $stock = '';
 $status = 'Active';
 
-function logProductAction($conn, $activity, $description)
+function insertProductAddAudit($conn, $productId, $productName)
 {
     $auditSql = 'INSERT INTO audit_logs (user_id, activity, description, ip_address) VALUES (?, ?, ?, ?)';
     $auditStmt = mysqli_prepare($conn, $auditSql);
 
-    if ($auditStmt !== false) {
-        $adminUserId = $_SESSION['user_id'];
-        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? '';
-        mysqli_stmt_bind_param($auditStmt, 'isss', $adminUserId, $activity, $description, $ipAddress);
-        mysqli_stmt_execute($auditStmt);
-        mysqli_stmt_close($auditStmt);
+    if ($auditStmt === false) {
+        return false;
     }
+
+    $adminUserId = (int) $_SESSION['user_id'];
+    $activity = 'Add Product';
+    $description = 'Added product ID ' . $productId . ': ' . $productName . '.';
+    $ipAddressValue = $_SERVER['REMOTE_ADDR'] ?? '';
+    $ipAddress = is_string($ipAddressValue) ? substr($ipAddressValue, 0, 45) : '';
+    $bound = mysqli_stmt_bind_param($auditStmt, 'isss', $adminUserId, $activity, $description, $ipAddress);
+    $inserted = $bound && mysqli_stmt_execute($auditStmt) && mysqli_stmt_affected_rows($auditStmt) === 1;
+    mysqli_stmt_close($auditStmt);
+
+    return $inserted;
 }
 
 function loadCategories($conn)
 {
     $categoryRows = [];
-    $categorySql = 'SELECT category_id, category_name FROM categories ORDER BY category_name ASC';
+    $categorySql = 'SELECT category_id, category_name FROM categories WHERE category_name = ? ORDER BY category_name ASC';
     $categoryStmt = mysqli_prepare($conn, $categorySql);
 
     if ($categoryStmt === false) {
         return $categoryRows;
     }
 
-    mysqli_stmt_execute($categoryStmt);
+    $requiredCategoryName = PRODUCT_CATEGORY_NAME;
+
+    if (
+        !mysqli_stmt_bind_param($categoryStmt, 's', $requiredCategoryName) ||
+        !mysqli_stmt_execute($categoryStmt)
+    ) {
+        mysqli_stmt_close($categoryStmt);
+        return $categoryRows;
+    }
+
     mysqli_stmt_bind_result($categoryStmt, $foundCategoryId, $foundCategoryName);
 
     while (mysqli_stmt_fetch($categoryStmt)) {
@@ -55,15 +72,23 @@ function loadCategories($conn)
 
 function categoryExists($conn, $categoryId)
 {
-    $categorySql = 'SELECT category_id FROM categories WHERE category_id = ? LIMIT 1';
+    $categorySql = 'SELECT category_id FROM categories WHERE category_id = ? AND category_name = ? LIMIT 1';
     $categoryStmt = mysqli_prepare($conn, $categorySql);
 
     if ($categoryStmt === false) {
         return false;
     }
 
-    mysqli_stmt_bind_param($categoryStmt, 'i', $categoryId);
-    mysqli_stmt_execute($categoryStmt);
+    $requiredCategoryName = PRODUCT_CATEGORY_NAME;
+
+    if (
+        !mysqli_stmt_bind_param($categoryStmt, 'is', $categoryId, $requiredCategoryName) ||
+        !mysqli_stmt_execute($categoryStmt)
+    ) {
+        mysqli_stmt_close($categoryStmt);
+        return false;
+    }
+
     mysqli_stmt_store_result($categoryStmt);
     $exists = mysqli_stmt_num_rows($categoryStmt) > 0;
     mysqli_stmt_close($categoryStmt);
@@ -135,6 +160,11 @@ function validateProductImage($imageFile, $uploadDirectory)
     $originalName = $imageFile['name'] ?? '';
     $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
 
+    if (hasBlockedUploadExtension($originalName)) {
+        $result['errors'][] = 'Product image filename contains a blocked file type.';
+        return $result;
+    }
+
     if (!in_array($extension, $allowedExtensions, true)) {
         $result['errors'][] = 'Product image must be JPG, JPEG, PNG, or WEBP.';
         return $result;
@@ -191,8 +221,10 @@ if (empty($categories) && !$postExceedsServerLimit) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($postExceedsServerLimit) {
         $errors = ['The uploaded file exceeds the server post limit. Please select a smaller image.'];
+    } elseif (!verifyCsrfToken()) {
+        $errors = ['The product request could not be verified. Please try again.'];
     } else {
-        $categoryId = (int) ($_POST['category_id'] ?? 0);
+        $categoryId = parsePositiveIntegerId($_POST['category_id'] ?? '');
         $productName = cleanInput($_POST['product_name'] ?? '');
         $description = cleanInput($_POST['description'] ?? '');
         $price = cleanInput($_POST['price'] ?? '');
@@ -240,38 +272,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $priceValue = (float) $price;
                 $stockValue = (int) $stock;
                 $imagePath = $imageValidation['relative_path'];
+                $transactionStarted = mysqli_begin_transaction($conn);
+                $mutationSucceeded = false;
 
-                $insertSql = 'INSERT INTO products (category_id, product_name, description, price, stock, image_path, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
-                $insertStmt = mysqli_prepare($conn, $insertSql);
+                if ($transactionStarted) {
+                    if (categoryExists($conn, $categoryId)) {
+                        $insertSql = 'INSERT INTO products (category_id, product_name, description, price, stock, image_path, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
+                        $insertStmt = mysqli_prepare($conn, $insertSql);
 
-                if ($insertStmt === false) {
-                    if (is_file($imageValidation['full_path'])) {
-                        unlink($imageValidation['full_path']);
-                    }
+                        if (
+                            $insertStmt !== false &&
+                            mysqli_stmt_bind_param(
+                                $insertStmt,
+                                'issdiss',
+                                $categoryId,
+                                $productName,
+                                $description,
+                                $priceValue,
+                                $stockValue,
+                                $imagePath,
+                                $status
+                            )
+                        ) {
+                            $inserted = mysqli_stmt_execute($insertStmt) && mysqli_stmt_affected_rows($insertStmt) === 1;
 
-                    $errors[] = 'Product could not be added right now.';
-                } else {
-                    mysqli_stmt_bind_param($insertStmt, 'issdiss', $categoryId, $productName, $description, $priceValue, $stockValue, $imagePath, $status);
-
-                    if (mysqli_stmt_execute($insertStmt)) {
-                        logProductAction($conn, 'Add Product', 'Admin added product: ' . $productName);
-                        $successMessage = 'Product added successfully.';
-                        $categoryId = 0;
-                        $productName = '';
-                        $description = '';
-                        $price = '';
-                        $stock = '';
-                        $status = 'Active';
-                    } else {
-                        if (is_file($imageValidation['full_path'])) {
-                            unlink($imageValidation['full_path']);
+                            if ($inserted) {
+                                $newProductId = mysqli_insert_id($conn);
+                                $mutationSucceeded = insertProductAddAudit($conn, $newProductId, $productName);
+                            }
                         }
 
-                        $errors[] = 'Product could not be added right now.';
+                        if ($insertStmt !== false) {
+                            mysqli_stmt_close($insertStmt);
+                        }
                     }
 
-                    mysqli_stmt_close($insertStmt);
+                    if ($mutationSucceeded && mysqli_commit($conn)) {
+                        redirectTo(rtrim(APP_BASE_URL, '/') . '/admin/products.php?message=product_added');
+                    }
+
+                    mysqli_rollback($conn);
                 }
+
+                if (is_file($imageValidation['full_path']) && !unlink($imageValidation['full_path'])) {
+                    error_log('TELA product upload: rollback file cleanup failed.');
+                }
+
+                $errors[] = 'Product could not be added right now.';
             }
         }
     }
@@ -310,6 +357,7 @@ include __DIR__ . '/../includes/header.php';
             <?php endif; ?>
 
             <form method="post" action="product_add.php" enctype="multipart/form-data" novalidate>
+                <?php echo csrfTokenField(); ?>
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label for="category_id" class="form-label">Category</label>

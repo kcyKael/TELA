@@ -1,12 +1,20 @@
 <?php
 function cleanInput($value)
 {
+    if (!is_string($value)) {
+        return '';
+    }
+
     return trim($value);
 }
 
 function escapeOutput($value)
 {
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+    if (!is_scalar($value) && $value !== null) {
+        return '';
+    }
+
+    return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 }
 
 function redirectTo($path)
@@ -137,4 +145,60 @@ function formatDatabaseDate($dateValue)
     }
 
     return date('M j, Y g:i A', $timestamp);
+}
+
+function parsePositiveIntegerId($value, $maximumValue = 4294967295)
+{
+    if (
+        !is_string($value) ||
+        $value === '' ||
+        strlen($value) > 10 ||
+        !ctype_digit($value)
+    ) {
+        return false;
+    }
+
+    $maximumValueText = (string) $maximumValue;
+    $valueWithoutLeadingZeros = ltrim($value, '0');
+
+    if ($valueWithoutLeadingZeros === '') {
+        return false;
+    }
+
+    if (
+        strlen($valueWithoutLeadingZeros) > strlen($maximumValueText) ||
+        (
+            strlen($valueWithoutLeadingZeros) === strlen($maximumValueText) &&
+            strcmp($valueWithoutLeadingZeros, $maximumValueText) > 0
+        )
+    ) {
+        return false;
+    }
+
+    $identifier = (int) $value;
+
+    if ($identifier <= 0 || $identifier > $maximumValue) {
+        return false;
+    }
+
+    return $identifier;
+}
+
+function hasBlockedUploadExtension($originalFileName)
+{
+    if (!is_string($originalFileName) || $originalFileName === '') {
+        return false;
+    }
+
+    $safeBaseName = strtolower(basename(str_replace('\\', '/', $originalFileName)));
+    $nameParts = explode('.', $safeBaseName);
+    $blockedExtensions = ['php', 'php3', 'php4', 'php5', 'php7', 'php8', 'phtml', 'phar', 'cgi', 'pl', 'py', 'sh', 'js', 'html', 'htm', 'shtml', 'svg'];
+
+    foreach ($nameParts as $namePart) {
+        if (in_array($namePart, $blockedExtensions, true)) {
+            return true;
+        }
+    }
+
+    return false;
 }

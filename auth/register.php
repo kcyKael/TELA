@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
+initializeTelaSession();
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/brevo_email.php';
@@ -15,12 +16,18 @@ $errors = [];
 $successMessage = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verifyCsrfToken()) {
+        $errors[] = 'The registration request could not be verified. Please try again.';
+    }
+
     $fullName = cleanInput($_POST['full_name'] ?? '');
     $email = cleanInput($_POST['email'] ?? '');
     $address = cleanInput($_POST['address'] ?? '');
     $contactNumber = cleanInput($_POST['contact_number'] ?? '');
-    $password = $_POST['password'] ?? '';
-    $confirmPassword = $_POST['confirm_password'] ?? '';
+    $password = isset($_POST['password']) && is_string($_POST['password']) ? $_POST['password'] : '';
+    $confirmPassword = isset($_POST['confirm_password']) && is_string($_POST['confirm_password'])
+        ? $_POST['confirm_password']
+        : '';
 
     if ($fullName === '') {
         $errors[] = 'Complete name is required.';
@@ -151,6 +158,7 @@ include __DIR__ . '/../includes/header.php';
             <?php endif; ?>
 
             <form id="registrationForm" method="post" action="register.php" novalidate>
+                <?php echo csrfTokenField(); ?>
                 <div class="mb-3">
                     <label for="full_name" class="form-label">Complete Name</label>
                     <input type="text" class="form-control" id="full_name" name="full_name" value="<?php echo escapeOutput($fullName); ?>" maxlength="100" required>

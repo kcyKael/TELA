@@ -1,11 +1,8 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
+initializeTelaSession();
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/functions.php';
-
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 
 $adminRedirect = rtrim(APP_BASE_URL, '/') . '/admin/dashboard.php';
 $buyerRedirect = rtrim(APP_BASE_URL, '/') . '/buyer/store.php';
@@ -28,8 +25,12 @@ $errors = [];
 $unverifiedMessage = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verifyCsrfToken()) {
+        $errors[] = 'The login request could not be verified. Please try again.';
+    }
+
     $email = cleanInput($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
+    $password = isset($_POST['password']) && is_string($_POST['password']) ? $_POST['password'] : '';
 
     if ($email === '') {
         $errors[] = 'Email address is required.';
@@ -118,6 +119,7 @@ include __DIR__ . '/../includes/header.php';
             <?php endif; ?>
 
             <form method="post" action="login.php" novalidate>
+                <?php echo csrfTokenField(); ?>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email Address</label>
                     <input type="email" class="form-control" id="email" name="email" value="<?php echo escapeOutput($email); ?>" maxlength="150" required>

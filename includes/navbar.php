@@ -45,7 +45,10 @@ $userRole = $isLoggedIn ? $_SESSION['role'] : '';
                         <a class="nav-link <?php echo $activePage === 'about' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>buyer/about.php">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo BASE_URL; ?>auth/logout.php">Logout</a>
+                        <form method="post" action="<?php echo BASE_URL; ?>auth/logout.php">
+                            <?php echo csrfTokenField(); ?>
+                            <button type="submit" class="nav-link border-0 bg-transparent">Logout</button>
+                        </form>
                     </li>
                 <?php elseif ($userRole === 'admin'): ?>
                     <li class="nav-item">
@@ -70,7 +73,10 @@ $userRole = $isLoggedIn ? $_SESSION['role'] : '';
                         <a class="nav-link <?php echo $activePage === 'admin_audit' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/audit_logs.php">Audit Logs</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo BASE_URL; ?>auth/logout.php">Logout</a>
+                        <form method="post" action="<?php echo BASE_URL; ?>auth/logout.php">
+                            <?php echo csrfTokenField(); ?>
+                            <button type="submit" class="nav-link border-0 bg-transparent">Logout</button>
+                        </form>
                     </li>
                 <?php endif; ?>
             </ul>

@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
+initializeTelaSession();
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/brevo_email.php';
@@ -14,7 +15,10 @@ $genericMessage = 'If the email address is registered and still needs verificati
 $resendWaitSeconds = 5 * 60;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    error_log('RESEND: POST received');
+    if (!verifyCsrfToken()) {
+        $errors[] = 'The resend request could not be verified. Please try again.';
+    }
+
     $email = cleanInput($_POST['email'] ?? '');
 
     if ($email === '') {
@@ -24,7 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        error_log('RESEND: email validated');
         $successMessage = $genericMessage;
 
         $selectSql = '
@@ -42,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $selectStmt = mysqli_prepare($conn, $selectSql);
 
         if ($selectStmt === false) {
-            error_log('RESEND: account lookup prepare failed');
+            error_log('TELA verification resend: account lookup failed.');
         } else {
             mysqli_stmt_bind_param($selectStmt, 's', $email);
             mysqli_stmt_execute($selectStmt);
@@ -50,49 +53,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $accountFound = mysqli_stmt_fetch($selectStmt);
             mysqli_stmt_close($selectStmt);
 
-            if (!$accountFound) {
-                error_log('RESEND: account row not found');
-            } else {
-                error_log('RESEND: account row found; user_id=' . $userId . '; verified=' . (int) $isVerified);
-            }
-
             if ($accountFound && (int) $isVerified === 0) {
-                error_log('RESEND: account eligible; user_id=' . $userId);
                 $effectiveTokenTime = $updatedAtUnix !== null ? (int) $updatedAtUnix : (int) $createdAtUnix;
                 $requestAllowed = $effectiveTokenTime === 0 || (time() - $effectiveTokenTime) >= $resendWaitSeconds;
 
                 if ($requestAllowed) {
-                    error_log('RESEND: throttle passed; user_id=' . $userId);
                     $newVerificationToken = bin2hex(random_bytes(32));
                     $updateSql = 'UPDATE users SET verification_token = ?, updated_at = NOW() WHERE user_id = ? AND is_verified = 0';
                     $updateStmt = mysqli_prepare($conn, $updateSql);
 
                     if ($updateStmt === false) {
-                        error_log('RESEND: token update prepare failed; user_id=' . $userId);
+                        error_log('TELA verification resend: token update failed.');
                     } else {
-                        error_log('RESEND: token update attempted; user_id=' . $userId);
                         mysqli_stmt_bind_param($updateStmt, 'si', $newVerificationToken, $userId);
                         mysqli_stmt_execute($updateStmt);
                         $updatedRows = mysqli_stmt_affected_rows($updateStmt);
                         mysqli_stmt_close($updateStmt);
-                        error_log('RESEND: token update affected rows=' . $updatedRows . '; user_id=' . $userId);
 
                         if ($updatedRows === 1) {
-                            error_log('RESEND: Brevo helper called; user_id=' . $userId);
                             $emailSent = sendVerificationEmail($email, $fullName, $newVerificationToken);
 
-                            if ($emailSent) {
-                                error_log('RESEND: Brevo helper success; user_id=' . $userId);
-                            } else {
-                                error_log('RESEND: Brevo helper failure; user_id=' . $userId);
+                            if (!$emailSent) {
+                                error_log('TELA verification resend: email delivery failed.');
                             }
                         }
                     }
-                } else {
-                    error_log('RESEND: throttle blocked; user_id=' . $userId);
                 }
-            } elseif ($accountFound) {
-                error_log('RESEND: account ineligible; already verified; user_id=' . $userId);
             }
         }
 
@@ -127,6 +113,7 @@ include __DIR__ . '/../includes/header.php';
             <?php endif; ?>
 
             <form id="resendVerificationForm" method="post" action="resend_verification.php" novalidate>
+                <?php echo csrfTokenField(); ?>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email Address</label>
                     <input type="email" class="form-control" id="email" name="email" value="<?php echo escapeOutput($email); ?>" maxlength="150" required>

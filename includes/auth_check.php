@@ -1,9 +1,6 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
 require_once __DIR__ . '/../config/config.php';
+initializeTelaSession();
 require_once __DIR__ . '/functions.php';
 
 function requireAuthenticated()

@@ -6,8 +6,11 @@ $pageTitle = 'Product Management';
 $activePage = 'admin_products';
 $errors = [];
 $products = [];
-$messageCode = $_GET['message'] ?? '';
+$messageValue = $_GET['message'] ?? '';
+$messageCode = is_string($messageValue) ? $messageValue : '';
 $successMessages = [
+    'product_added' => 'Product was added successfully.',
+    'product_updated' => 'Product was updated successfully.',
     'product_deactivated' => 'Product was deactivated successfully.',
     'product_deactivated_history' => 'Product has order history, so it was safely deactivated.',
     'product_activated' => 'Product was activated successfully.'
@@ -181,12 +184,14 @@ include __DIR__ . '/../includes/header.php';
                                         <div class="btn-group btn-group-sm" role="group" aria-label="Product actions">
                                             <a class="btn btn-outline-dark" href="product_edit.php?id=<?php echo $safeProductId; ?>">Edit</a>
                                             <form method="post" action="product_status.php" class="d-inline">
+                                                <?php echo csrfTokenField(); ?>
                                                 <input type="hidden" name="product_id" value="<?php echo $safeProductId; ?>">
                                                 <input type="hidden" name="action" value="<?php echo $product['status'] === 'Active' ? 'deactivate' : 'activate'; ?>">
                                                 <button type="submit" class="btn btn-outline-secondary"><?php echo escapeOutput($statusActionLabel); ?></button>
                                             </form>
                                             <?php if ($product['status'] === 'Active'): ?>
                                                 <form method="post" action="product_delete.php" class="d-inline" onsubmit="return confirm('Deactivate this product?');">
+                                                    <?php echo csrfTokenField(); ?>
                                                     <input type="hidden" name="product_id" value="<?php echo $safeProductId; ?>">
                                                     <button type="submit" class="btn btn-outline-danger">Safe Delete</button>
                                                 </form>
