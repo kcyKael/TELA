@@ -532,10 +532,10 @@ include __DIR__ . '/../includes/header.php';
                     <dd class="col-sm-8"><?php echo escapeOutput(ucfirst($targetRole)); ?></dd>
                     <dt class="col-sm-4">Verification</dt>
                     <dd class="col-sm-8">
-                        <?php echo escapeOutput($targetIsVerified === 1 ? 'Verified' : 'Unverified'); ?>
+                        <span class="badge <?php echo getVerificationBadgeClass($targetIsVerified); ?>"><?php echo escapeOutput($targetIsVerified === 1 ? 'Verified' : 'Unverified'); ?></span>
                     </dd>
                     <dt class="col-sm-4">Created Date</dt>
-                    <dd class="col-sm-8"><?php echo escapeOutput($targetCreatedAt); ?></dd>
+                    <dd class="col-sm-8"><?php echo escapeOutput(formatDatabaseDate($targetCreatedAt)); ?></dd>
                 </dl>
 
                 <form method="post" action="<?php echo BASE_URL; ?>admin/user_edit.php?user_id=<?php echo (int) $targetUserId; ?>">

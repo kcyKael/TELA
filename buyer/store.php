@@ -184,11 +184,11 @@ $isAdminBrowsing = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
                         ?>
                         <div class="col-sm-6 col-lg-4">
                             <div class="card h-100">
-                                <img src="<?php echo escapeOutput($imageSource); ?>" class="card-img-top" alt="<?php echo escapeOutput($product['product_name']); ?>" style="height: 220px; object-fit: cover;">
+                                <img src="<?php echo escapeOutput($imageSource); ?>" class="card-img-top product-card-image" alt="<?php echo escapeOutput($product['product_name']); ?> Hoodie product image">
                                 <div class="card-body d-flex flex-column">
                                     <p class="text-muted small mb-1"><?php echo escapeOutput($product['category_name']); ?></p>
                                     <h2 class="h5 card-title"><?php echo escapeOutput($product['product_name']); ?></h2>
-                                    <p class="fw-semibold mb-2">PHP <?php echo escapeOutput(number_format((float) $product['price'], 2)); ?></p>
+                                    <p class="fw-semibold mb-2"><?php echo escapeOutput(formatMoney($product['price'])); ?></p>
                                     <p class="mb-3">
                                         <span class="<?php echo $stockClass; ?>"><?php echo escapeOutput($stockCondition); ?></span>
                                     </p>

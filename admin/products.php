@@ -104,7 +104,7 @@ include __DIR__ . '/../includes/header.php';
 
 <section class="page-section">
     <div class="container">
-        <div class="setup-panel">
+        <div class="setup-panel management-panel">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
                 <div>
                     <p class="section-label mb-2">Admin Management</p>
@@ -137,17 +137,17 @@ include __DIR__ . '/../includes/header.php';
             <?php endif; ?>
 
             <div class="table-responsive">
-                <table class="table table-striped align-middle">
+                <table class="table table-striped align-middle product-management-table">
                     <thead>
                         <tr>
-                            <th>Image</th>
-                            <th>Product Name</th>
-                            <th>Category</th>
-                            <th>Price</th>
-                            <th>Stock</th>
-                            <th>Status</th>
-                            <th>Last Updated</th>
-                            <th class="text-end">Actions</th>
+                            <th scope="col">Image</th>
+                            <th scope="col">Product Name</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Stock</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Last Updated</th>
+                            <th scope="col" class="text-end">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -162,41 +162,47 @@ include __DIR__ . '/../includes/header.php';
                                 $safeImageSource = getSafeProductImage($product['image_path']);
                                 $stockLabel = $product['stock'] === 0 ? 'Out of Stock' : (string) $product['stock'];
                                 $stockClass = $product['stock'] === 0 ? 'badge text-bg-danger' : 'badge text-bg-success';
-                                $statusClass = $product['status'] === 'Active' ? 'badge text-bg-success' : 'badge text-bg-secondary';
+                                $hasKnownStatus = in_array($product['status'], ['Active', 'Inactive'], true);
+                                $statusClass = 'badge ' . getProductStatusBadgeClass($product['status']);
                                 $displayDate = $product['updated_at'] !== null ? $product['updated_at'] : $product['created_at'];
                                 $statusActionLabel = $product['status'] === 'Active' ? 'Deactivate' : 'Activate';
                                 ?>
                                 <tr>
                                     <td>
                                         <?php if ($safeImageSource !== ''): ?>
-                                            <img src="<?php echo escapeOutput($safeImageSource); ?>" alt="<?php echo escapeOutput($product['product_name']); ?>" class="img-thumbnail" style="width: 72px; height: 72px; object-fit: cover;">
+                                            <img src="<?php echo escapeOutput($safeImageSource); ?>" alt="<?php echo escapeOutput($product['product_name']); ?> Hoodie product thumbnail" class="img-thumbnail admin-product-image">
                                         <?php else: ?>
                                             <div class="border rounded bg-light text-muted d-flex align-items-center justify-content-center text-center small" style="width: 72px; height: 72px;">No Image</div>
                                         <?php endif; ?>
                                     </td>
                                     <td><?php echo escapeOutput($product['product_name']); ?></td>
                                     <td><?php echo escapeOutput($product['category_name']); ?></td>
-                                    <td>PHP <?php echo escapeOutput(number_format((float) $product['price'], 2)); ?></td>
+                                    <td class="text-nowrap"><?php echo escapeOutput(formatMoney($product['price'])); ?></td>
                                     <td><span class="<?php echo $stockClass; ?>"><?php echo escapeOutput($stockLabel); ?></span></td>
-                                    <td><span class="<?php echo $statusClass; ?>"><?php echo escapeOutput($product['status']); ?></span></td>
-                                    <td><?php echo escapeOutput($displayDate); ?></td>
+                                    <td><span class="<?php echo $statusClass; ?>"><?php echo escapeOutput(getProductStatusLabel($product['status'])); ?></span></td>
+                                    <td class="text-nowrap"><?php echo escapeOutput(formatDatabaseDate($displayDate)); ?></td>
                                     <td class="text-end">
-                                        <div class="btn-group btn-group-sm" role="group" aria-label="Product actions">
-                                            <a class="btn btn-outline-dark" href="product_edit.php?id=<?php echo $safeProductId; ?>">Edit</a>
-                                            <form method="post" action="product_status.php" class="d-inline">
-                                                <?php echo csrfTokenField(); ?>
-                                                <input type="hidden" name="product_id" value="<?php echo $safeProductId; ?>">
-                                                <input type="hidden" name="action" value="<?php echo $product['status'] === 'Active' ? 'deactivate' : 'activate'; ?>">
-                                                <button type="submit" class="btn btn-outline-secondary"><?php echo escapeOutput($statusActionLabel); ?></button>
-                                            </form>
-                                            <?php if ($product['status'] === 'Active'): ?>
-                                                <form method="post" action="product_delete.php" class="d-inline" onsubmit="return confirm('Deactivate this product?');">
+                                        <div class="table-actions" aria-label="Product actions">
+                                            <a class="btn btn-sm btn-outline-dark" href="product_edit.php?id=<?php echo $safeProductId; ?>">Edit</a>
+                                            <?php if ($hasKnownStatus): ?>
+                                                <form method="post" action="product_status.php">
                                                     <?php echo csrfTokenField(); ?>
                                                     <input type="hidden" name="product_id" value="<?php echo $safeProductId; ?>">
-                                                    <button type="submit" class="btn btn-outline-danger">Safe Delete</button>
+                                                    <input type="hidden" name="action" value="<?php echo $product['status'] === 'Active' ? 'deactivate' : 'activate'; ?>">
+                                                    <button type="submit" class="btn btn-sm btn-outline-secondary"><?php echo escapeOutput($statusActionLabel); ?></button>
                                                 </form>
+                                                <?php if ($product['status'] === 'Active'): ?>
+                                                    <form method="post" action="product_delete.php" onsubmit="return confirm('Deactivate this product?');">
+                                                        <?php echo csrfTokenField(); ?>
+                                                        <input type="hidden" name="product_id" value="<?php echo $safeProductId; ?>">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger">Safe Delete</button>
+                                                    </form>
+                                                <?php else: ?>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" disabled>Safe Delete</button>
+                                                <?php endif; ?>
                                             <?php else: ?>
-                                                <button type="button" class="btn btn-outline-danger" disabled>Safe Delete</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" disabled>Status Unavailable</button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" disabled>Safe Delete</button>
                                             <?php endif; ?>
                                         </div>
                                     </td>

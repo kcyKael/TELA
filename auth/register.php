@@ -161,33 +161,33 @@ include __DIR__ . '/../includes/header.php';
                 <?php echo csrfTokenField(); ?>
                 <div class="mb-3">
                     <label for="full_name" class="form-label">Complete Name</label>
-                    <input type="text" class="form-control" id="full_name" name="full_name" value="<?php echo escapeOutput($fullName); ?>" maxlength="100" required>
+                    <input type="text" class="form-control" id="full_name" name="full_name" value="<?php echo escapeOutput($fullName); ?>" maxlength="100" autocomplete="name" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="email" class="form-label">Email Address</label>
-                    <input type="email" class="form-control" id="email" name="email" value="<?php echo escapeOutput($email); ?>" maxlength="150" required>
+                    <input type="email" class="form-control" id="email" name="email" value="<?php echo escapeOutput($email); ?>" maxlength="150" autocomplete="email" required>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" minlength="8" required>
+                        <input type="password" class="form-control" id="password" name="password" minlength="8" autocomplete="new-password" required>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="confirm_password" class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" minlength="8" required>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" minlength="8" autocomplete="new-password" required>
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label for="address" class="form-label">Complete Address</label>
-                    <textarea class="form-control" id="address" name="address" rows="3" required><?php echo escapeOutput($address); ?></textarea>
+                    <textarea class="form-control" id="address" name="address" rows="3" autocomplete="street-address" required><?php echo escapeOutput($address); ?></textarea>
                 </div>
 
                 <div class="mb-3">
                     <label for="contact_number" class="form-label">Contact Number</label>
-                    <input type="text" class="form-control" id="contact_number" name="contact_number" value="<?php echo escapeOutput($contactNumber); ?>" maxlength="20" required>
+                    <input type="tel" class="form-control" id="contact_number" name="contact_number" value="<?php echo escapeOutput($contactNumber); ?>" maxlength="20" autocomplete="tel" inputmode="tel" required>
                 </div>
 
                 <button type="submit" class="btn btn-dark w-100">Register</button>

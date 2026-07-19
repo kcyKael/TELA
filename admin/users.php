@@ -103,7 +103,7 @@ include __DIR__ . '/../includes/header.php';
             <?php endif; ?>
 
             <?php if ($usersLoadError !== ''): ?>
-                <div class="alert alert-warning mb-0" role="alert">
+                <div class="alert alert-danger mb-0" role="alert">
                     <?php echo escapeOutput($usersLoadError); ?>
                 </div>
             <?php elseif (empty($users)): ?>
@@ -131,11 +131,11 @@ include __DIR__ . '/../includes/header.php';
                                 $roleBadgeClass = $hasKnownRole ? $roleBadgeClasses[$user['role']] : 'text-bg-secondary';
                                 $roleLabel = $hasKnownRole ? ucfirst($user['role']) : 'Role unavailable';
                                 $verificationLabel = $user['is_verified'] === 1 ? 'Verified' : 'Unverified';
-                                $verificationBadgeClass = $user['is_verified'] === 1 ? 'text-bg-success' : 'text-bg-secondary';
+                                $verificationBadgeClass = getVerificationBadgeClass($user['is_verified']);
                                 ?>
                                 <tr>
-                                    <td><?php echo escapeOutput($user['full_name']); ?></td>
-                                    <td><?php echo escapeOutput($user['email']); ?></td>
+                                    <td class="long-value"><?php echo escapeOutput($user['full_name']); ?></td>
+                                    <td class="long-value"><?php echo escapeOutput($user['email']); ?></td>
                                     <td>
                                         <span class="badge <?php echo $roleBadgeClass; ?>">
                                             <?php echo escapeOutput($roleLabel); ?>
@@ -147,7 +147,7 @@ include __DIR__ . '/../includes/header.php';
                                         </span>
                                     </td>
                                     <td class="text-nowrap"><?php echo escapeOutput($user['contact_number']); ?></td>
-                                    <td class="text-nowrap"><?php echo escapeOutput($user['created_at']); ?></td>
+                                    <td class="text-nowrap"><?php echo escapeOutput(formatDatabaseDate($user['created_at'])); ?></td>
                                     <td class="text-end">
                                         <?php if ($user['role'] === 'admin'): ?>
                                             <a class="btn btn-sm btn-outline-dark text-nowrap" href="<?php echo BASE_URL; ?>admin/user_edit.php?user_id=<?php echo (int) $user['user_id']; ?>">Edit</a>

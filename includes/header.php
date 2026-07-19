@@ -21,5 +21,6 @@ if (!isset($activePage)) {
     <link href="<?php echo BASE_URL; ?>assets/css/style.css" rel="stylesheet">
 </head>
 <body>
+<a class="visually-hidden-focusable skip-link" href="#main-content">Skip to main content</a>
 <?php include __DIR__ . '/navbar.php'; ?>
-<main class="flex-fill py-4">
+<main id="main-content" class="flex-fill py-4" tabindex="-1">

@@ -143,15 +143,15 @@ include __DIR__ . '/../includes/header.php';
                             <?php foreach ($inventoryItems as $item): ?>
                                 <?php
                                 $condition = $item['stock'] > 0 ? 'In Stock' : 'Out of Stock';
-                                $conditionClass = $item['stock'] > 0 ? 'text-bg-success' : 'text-bg-danger';
-                                $statusClass = $item['status'] === 'Active' ? 'text-bg-success' : 'text-bg-secondary';
+                                $conditionClass = getInventoryConditionBadgeClass($item['stock']);
+                                $statusClass = getProductStatusBadgeClass($item['status']);
                                 $displayDate = $item['updated_at'] !== null ? $item['updated_at'] : $item['created_at'];
                                 ?>
                                 <tr>
                                     <td><?php echo escapeOutput($item['product_name']); ?></td>
                                     <td><?php echo escapeOutput($item['category_name']); ?></td>
-                                    <td><span class="badge <?php echo $statusClass; ?>"><?php echo escapeOutput($item['status']); ?></span></td>
-                                    <td class="text-nowrap">PHP <?php echo escapeOutput(number_format((float) $item['price'], 2)); ?></td>
+                                    <td><span class="badge <?php echo $statusClass; ?>"><?php echo escapeOutput(getProductStatusLabel($item['status'])); ?></span></td>
+                                    <td class="text-nowrap"><?php echo escapeOutput(formatMoney($item['price'])); ?></td>
                                     <td><?php echo (int) $item['stock']; ?></td>
                                     <td><span class="badge <?php echo $conditionClass; ?>"><?php echo escapeOutput($condition); ?></span></td>
                                     <td class="text-nowrap"><?php echo escapeOutput(formatDatabaseDate($displayDate)); ?></td>

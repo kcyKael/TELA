@@ -273,9 +273,8 @@ include __DIR__ . '/../includes/header.php';
                                 <div class="col-sm-4 col-md-3">
                                     <img
                                         src="<?php echo escapeOutput($imageSource); ?>"
-                                        alt="<?php echo escapeOutput($item['product_name']); ?>"
-                                        class="img-fluid rounded border w-100"
-                                        style="height: 160px; object-fit: cover;"
+                                        alt="<?php echo escapeOutput($item['product_name']); ?> Hoodie product image"
+                                        class="img-fluid rounded border checkout-item-image"
                                     >
                                 </div>
                                 <div class="col-sm-8 col-md-9">
@@ -284,14 +283,14 @@ include __DIR__ . '/../includes/header.php';
                                             <p class="text-muted small mb-1"><?php echo escapeOutput($item['category_name']); ?></p>
                                             <h3 class="h6 mb-2"><?php echo escapeOutput($item['product_name']); ?></h3>
                                         </div>
-                                        <p class="fw-semibold mb-0 flex-shrink-0 text-md-end">PHP <?php echo escapeOutput(number_format($item['subtotal'], 2)); ?></p>
+                                        <p class="fw-semibold mb-0 flex-shrink-0 text-md-end"><?php echo escapeOutput(formatMoney($item['subtotal'])); ?></p>
                                     </div>
 
                                     <div class="row g-2 small mt-1">
-                                        <div class="col-6 col-lg-3"><span class="text-muted">Current price</span><br>PHP <?php echo escapeOutput(number_format($item['price'], 2)); ?></div>
+                                        <div class="col-6 col-lg-3"><span class="text-muted">Current price</span><br><?php echo escapeOutput(formatMoney($item['price'])); ?></div>
                                         <div class="col-6 col-lg-3"><span class="text-muted">Quantity</span><br><?php echo (int) $item['quantity']; ?></div>
                                         <div class="col-6 col-lg-3"><span class="text-muted">Current stock</span><br><?php echo (int) $item['stock']; ?></div>
-                                        <div class="col-6 col-lg-3"><span class="text-muted">Status</span><br><?php echo escapeOutput($item['status']); ?></div>
+                                        <div class="col-6 col-lg-3"><span class="text-muted">Status</span><br><span class="badge <?php echo getProductStatusBadgeClass($item['status']); ?>"><?php echo escapeOutput(getProductStatusLabel($item['status'])); ?></span></div>
                                     </div>
 
                                     <div class="d-flex flex-wrap gap-2 mt-3">
@@ -314,7 +313,7 @@ include __DIR__ . '/../includes/header.php';
 
                 <div class="border-top pt-3 d-flex justify-content-between align-items-center">
                     <span class="h5 mb-0">Checkout Total</span>
-                    <strong class="h4 mb-0">PHP <?php echo escapeOutput(number_format($checkoutTotal, 2)); ?></strong>
+                    <strong class="h4 mb-0 text-nowrap"><?php echo escapeOutput(formatMoney($checkoutTotal)); ?></strong>
                 </div>
 
                 <div class="alert alert-secondary mt-4" role="note">

@@ -122,12 +122,12 @@ include __DIR__ . '/../includes/header.php';
                 <?php echo csrfTokenField(); ?>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email Address</label>
-                    <input type="email" class="form-control" id="email" name="email" value="<?php echo escapeOutput($email); ?>" maxlength="150" required>
+                    <input type="email" class="form-control" id="email" name="email" value="<?php echo escapeOutput($email); ?>" maxlength="150" autocomplete="username" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
+                    <input type="password" class="form-control" id="password" name="password" autocomplete="current-password" required>
                 </div>
 
                 <button type="submit" class="btn btn-dark w-100">Login</button>

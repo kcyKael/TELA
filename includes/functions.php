@@ -147,6 +147,65 @@ function formatDatabaseDate($dateValue)
     return date('M j, Y g:i A', $timestamp);
 }
 
+function formatMoney($amount)
+{
+    if (!is_numeric($amount)) {
+        return 'PHP -';
+    }
+
+    return 'PHP ' . number_format((float) $amount, 2, '.', ',');
+}
+
+function isKnownOrderStatus($status)
+{
+    return is_string($status) && in_array($status, ['Pending', 'Processing', 'Completed', 'Cancelled'], true);
+}
+
+function getOrderStatusBadgeClass($status)
+{
+    $badgeClasses = [
+        'Pending' => 'text-bg-warning',
+        'Processing' => 'text-bg-primary',
+        'Completed' => 'text-bg-success',
+        'Cancelled' => 'text-bg-secondary'
+    ];
+
+    return $badgeClasses[$status] ?? 'text-bg-light border text-dark';
+}
+
+function getOrderStatusLabel($status)
+{
+    return isKnownOrderStatus($status) ? $status : 'Status unavailable';
+}
+
+function getProductStatusBadgeClass($status)
+{
+    if ($status === 'Active') {
+        return 'text-bg-success';
+    }
+
+    if ($status === 'Inactive') {
+        return 'text-bg-secondary';
+    }
+
+    return 'text-bg-light border text-dark';
+}
+
+function getProductStatusLabel($status)
+{
+    return in_array($status, ['Active', 'Inactive'], true) ? $status : 'Status unavailable';
+}
+
+function getVerificationBadgeClass($isVerified)
+{
+    return (int) $isVerified === 1 ? 'text-bg-success' : 'text-bg-warning';
+}
+
+function getInventoryConditionBadgeClass($stock)
+{
+    return (int) $stock > 0 ? 'text-bg-success' : 'text-bg-danger';
+}
+
 function parsePositiveIntegerId($value, $maximumValue = 4294967295)
 {
     if (

@@ -62,13 +62,6 @@ if ($ordersStmt === false) {
     }
 }
 
-$statusBadgeClasses = [
-    'Pending' => 'text-bg-warning',
-    'Processing' => 'text-bg-primary',
-    'Completed' => 'text-bg-success',
-    'Cancelled' => 'text-bg-secondary'
-];
-
 include __DIR__ . '/../includes/header.php';
 ?>
 
@@ -79,7 +72,7 @@ include __DIR__ . '/../includes/header.php';
             <h1 class="h3 mb-3">My Orders</h1>
 
             <?php if ($ordersLoadError !== ''): ?>
-                <div class="alert alert-warning" role="alert">
+                <div class="alert alert-danger" role="alert">
                     <?php echo escapeOutput($ordersLoadError); ?>
                 </div>
                 <a class="btn btn-dark" href="<?php echo BASE_URL; ?>buyer/store.php">Browse Hoodies</a>
@@ -104,20 +97,19 @@ include __DIR__ . '/../includes/header.php';
                         <tbody>
                             <?php foreach ($orders as $order): ?>
                                 <?php
-                                $hasKnownStatus = isset($statusBadgeClasses[$order['order_status']]);
-                                $statusBadgeClass = $hasKnownStatus ? $statusBadgeClasses[$order['order_status']] : 'text-bg-secondary';
-                                $displayStatus = $hasKnownStatus ? $order['order_status'] : 'Status unavailable';
+                                $statusBadgeClass = getOrderStatusBadgeClass($order['order_status']);
+                                $displayStatus = getOrderStatusLabel($order['order_status']);
                                 ?>
                                 <tr>
-                                    <td><?php echo escapeOutput($order['order_number']); ?></td>
-                                    <td><?php echo escapeOutput($order['created_at']); ?></td>
+                                    <td class="long-value"><?php echo escapeOutput($order['order_number']); ?></td>
+                                    <td class="text-nowrap"><?php echo escapeOutput(formatDatabaseDate($order['created_at'])); ?></td>
                                     <td>
                                         <span class="badge <?php echo $statusBadgeClass; ?>">
                                             <?php echo escapeOutput($displayStatus); ?>
                                         </span>
                                     </td>
                                     <td><?php echo escapeOutput($order['payment_method']); ?></td>
-                                    <td class="text-end">PHP <?php echo escapeOutput(number_format($order['total_amount'], 2)); ?></td>
+                                    <td class="text-end text-nowrap"><?php echo escapeOutput(formatMoney($order['total_amount'])); ?></td>
                                     <td class="text-end">
                                         <a class="btn btn-sm btn-outline-dark text-nowrap" href="<?php echo BASE_URL; ?>buyer/order_details.php?order_id=<?php echo (int) $order['order_id']; ?>">View Details</a>
                                     </td>

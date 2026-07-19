@@ -580,7 +580,7 @@ include __DIR__ . '/../includes/header.php';
                         <div class="col-md-4">
                             <label class="form-label">Current Image</label>
                             <?php if ($currentImageSource !== ''): ?>
-                                <img src="<?php echo escapeOutput($currentImageSource); ?>" alt="<?php echo escapeOutput($productName); ?>" class="img-thumbnail d-block" style="width: 140px; height: 140px; object-fit: cover;">
+                                <img src="<?php echo escapeOutput($currentImageSource); ?>" alt="<?php echo escapeOutput($productName); ?> Hoodie product image" class="img-thumbnail d-block product-edit-image">
                             <?php else: ?>
                                 <div class="border rounded bg-light text-muted d-flex align-items-center justify-content-center text-center" style="width: 140px; height: 140px;">No Image</div>
                             <?php endif; ?>
@@ -593,7 +593,7 @@ include __DIR__ . '/../includes/header.php';
                         </div>
                     </div>
 
-                    <div class="mt-4 d-flex gap-2">
+                    <div class="mt-4 d-flex flex-column flex-sm-row gap-2">
                         <button type="submit" class="btn btn-dark">Update Product</button>
                         <a class="btn btn-outline-secondary" href="products.php">Cancel</a>
                     </div>

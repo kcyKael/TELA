@@ -189,13 +189,6 @@ if ($orderAvailable) {
     }
 }
 
-$statusBadgeClasses = [
-    'Pending' => 'text-bg-warning',
-    'Processing' => 'text-bg-primary',
-    'Completed' => 'text-bg-success',
-    'Cancelled' => 'text-bg-secondary'
-];
-
 $validNextStatuses = [
     'Pending' => ['Processing', 'Cancelled'],
     'Processing' => ['Completed', 'Cancelled'],
@@ -222,13 +215,9 @@ include __DIR__ . '/../includes/header.php';
                 </div>
             <?php else: ?>
                 <?php
-                $hasKnownStatus = isset($statusBadgeClasses[$order['order_status']]);
-                $statusBadgeClass = $hasKnownStatus
-                    ? $statusBadgeClasses[$order['order_status']]
-                    : 'text-bg-secondary';
-                $displayStatus = $hasKnownStatus
-                    ? $order['order_status']
-                    : 'Status unavailable';
+                $hasKnownStatus = isKnownOrderStatus($order['order_status']);
+                $statusBadgeClass = getOrderStatusBadgeClass($order['order_status']);
+                $displayStatus = getOrderStatusLabel($order['order_status']);
                 $nextStatusChoices = $hasKnownStatus
                     ? $validNextStatuses[$order['order_status']]
                     : [];
@@ -243,10 +232,10 @@ include __DIR__ . '/../includes/header.php';
                 <section class="border-bottom pb-4 mb-4" aria-labelledby="orderSummaryHeading">
                     <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-3">
                         <div>
-                            <h2 class="h5 mb-1" id="orderSummaryHeading">Order <?php echo escapeOutput($order['order_number']); ?></h2>
-                            <p class="text-muted mb-1">Created: <?php echo escapeOutput($order['created_at']); ?></p>
+                            <h2 class="h5 mb-1 long-value" id="orderSummaryHeading">Order <?php echo escapeOutput($order['order_number']); ?></h2>
+                            <p class="text-muted mb-1">Created: <?php echo escapeOutput(formatDatabaseDate($order['created_at'])); ?></p>
                             <?php if ($order['updated_at'] !== null && $order['updated_at'] !== ''): ?>
-                                <p class="text-muted mb-0">Last Updated: <?php echo escapeOutput($order['updated_at']); ?></p>
+                                <p class="text-muted mb-0">Last Updated: <?php echo escapeOutput(formatDatabaseDate($order['updated_at'])); ?></p>
                             <?php endif; ?>
                         </div>
                         <div>
@@ -263,7 +252,7 @@ include __DIR__ . '/../includes/header.php';
                         </div>
                         <div class="col-md-6">
                             <span class="text-muted small">Stored Order Total</span>
-                            <p class="fw-semibold mb-0">PHP <?php echo escapeOutput(number_format($order['total_amount'], 2)); ?></p>
+                            <p class="fw-semibold mb-0"><?php echo escapeOutput(formatMoney($order['total_amount'])); ?></p>
                         </div>
                     </div>
                 </section>
@@ -313,16 +302,16 @@ include __DIR__ . '/../includes/header.php';
                                     <?php foreach ($orderItems as $item): ?>
                                         <tr>
                                             <td><?php echo escapeOutput($item['product_name']); ?></td>
-                                            <td class="text-end text-nowrap">PHP <?php echo escapeOutput(number_format($item['price'], 2)); ?></td>
+                                        <td class="text-end text-nowrap"><?php echo escapeOutput(formatMoney($item['price'])); ?></td>
                                             <td class="text-end"><?php echo (int) $item['quantity']; ?></td>
-                                            <td class="text-end text-nowrap">PHP <?php echo escapeOutput(number_format($item['subtotal'], 2)); ?></td>
+                                        <td class="text-end text-nowrap"><?php echo escapeOutput(formatMoney($item['subtotal'])); ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
                                 <tfoot>
                                     <tr>
                                         <th scope="row" colspan="3" class="text-end">Stored Order Total</th>
-                                        <th class="text-end text-nowrap">PHP <?php echo escapeOutput(number_format($order['total_amount'], 2)); ?></th>
+                                    <th class="text-end text-nowrap"><?php echo escapeOutput(formatMoney($order['total_amount'])); ?></th>
                                     </tr>
                                 </tfoot>
                             </table>

@@ -352,7 +352,7 @@ include __DIR__ . '/../includes/header.php';
 
 <section class="page-section">
     <div class="container">
-        <div class="setup-panel">
+        <div class="setup-panel management-panel">
             <p class="section-label mb-2">Admin Management</p>
             <h1 class="h3 mb-3">Category Management</h1>
             <p class="text-muted">Manage product categories for the TELA Hoodie store.</p>
@@ -398,13 +398,13 @@ include __DIR__ . '/../includes/header.php';
                 <div class="col-lg-8">
                     <h2 class="h5 mb-3">Categories</h2>
                     <div class="table-responsive">
-                        <table class="table table-striped align-middle">
+                        <table class="table table-striped align-middle category-management-table">
                             <thead>
                                 <tr>
-                                    <th>Category Name</th>
-                                    <th>Created Date</th>
-                                    <th>Updated Date</th>
-                                    <th class="text-end">Actions</th>
+                                    <th scope="col">Category Name</th>
+                                    <th scope="col">Created Date</th>
+                                    <th scope="col">Updated Date</th>
+                                    <th scope="col" class="text-end">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -416,16 +416,18 @@ include __DIR__ . '/../includes/header.php';
                                     <?php foreach ($categories as $category): ?>
                                         <tr>
                                             <td><?php echo escapeOutput($category['category_name']); ?></td>
-                                            <td><?php echo escapeOutput($category['created_at']); ?></td>
-                                            <td><?php echo $category['updated_at'] !== null ? escapeOutput($category['updated_at']) : 'Not updated'; ?></td>
+                                            <td class="text-nowrap"><?php echo escapeOutput(formatDatabaseDate($category['created_at'])); ?></td>
+                                            <td class="text-nowrap"><?php echo escapeOutput(formatDatabaseDate($category['updated_at'])); ?></td>
                                             <td class="text-end">
-                                                <a class="btn btn-sm btn-outline-dark" href="categories.php?edit=<?php echo (int) $category['category_id']; ?>">Edit</a>
-                                                <form method="post" action="categories.php" class="d-inline" onsubmit="return confirm('Delete this category?');">
-                                                    <?php echo csrfTokenField(); ?>
-                                                    <input type="hidden" name="action" value="delete">
-                                                    <input type="hidden" name="category_id" value="<?php echo (int) $category['category_id']; ?>">
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                                </form>
+                                                <div class="table-actions">
+                                                    <a class="btn btn-sm btn-outline-dark" href="categories.php?edit=<?php echo (int) $category['category_id']; ?>">Edit</a>
+                                                    <form method="post" action="categories.php" onsubmit="return confirm('Delete this category?');">
+                                                        <?php echo csrfTokenField(); ?>
+                                                        <input type="hidden" name="action" value="delete">
+                                                        <input type="hidden" name="category_id" value="<?php echo (int) $category['category_id']; ?>">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                                    </form>
+                                                </div>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

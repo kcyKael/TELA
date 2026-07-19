@@ -15,8 +15,22 @@ main {
     width: 100%;
 }
 
-.navbar-brand img {
-    object-fit: contain;
+.skip-link {
+    position: fixed;
+    top: 0.5rem;
+    left: 0.5rem;
+    z-index: 1100;
+    padding: 0.5rem 0.75rem;
+    color: #ffffff;
+    background-color: #212529;
+    border-radius: 4px;
+}
+
+.nav-logout-button {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    text-align: left;
 }
 
 .page-section {
@@ -43,6 +57,22 @@ main {
 
 .setup-panel th,
 .setup-panel td {
+    overflow-wrap: anywhere;
+}
+
+.home-panel,
+.about-panel {
+    max-width: 960px;
+}
+
+.home-intro {
+    max-width: 680px;
+}
+
+.member-entry {
+    padding: 1rem;
+    border-left: 4px solid #212529;
+    background-color: #f8f9fa;
     overflow-wrap: anywhere;
 }
 
@@ -101,6 +131,18 @@ main {
     max-width: 1200px;
 }
 
+.management-panel {
+    max-width: 1200px;
+}
+
+.category-management-table {
+    min-width: 700px;
+}
+
+.product-management-table {
+    min-width: 1000px;
+}
+
 .inventory-report-table {
     min-width: 950px;
 }
@@ -124,8 +166,72 @@ main {
     overflow-wrap: anywhere;
 }
 
+.table td,
+.long-value {
+    overflow-wrap: anywhere;
+}
+
+.table th {
+    overflow-wrap: normal;
+    white-space: nowrap;
+}
+
+.table-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.25rem;
+}
+
+.product-card-image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}
+
+.product-detail-image {
+    width: 100%;
+    max-height: 460px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
+.cart-item-image,
+.checkout-item-image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}
+
+.admin-product-image,
+.product-edit-image {
+    object-fit: cover;
+}
+
+.admin-product-image {
+    width: 72px;
+    height: 72px;
+}
+
+.product-edit-image {
+    width: 140px;
+    height: 140px;
+}
+
 @media (max-width: 575.98px) {
+    .setup-panel {
+        padding: 1.25rem;
+    }
+
+    .home-actions .btn {
+        width: 100%;
+    }
+
     .dashboard-quick-links .btn {
         width: 100%;
+    }
+
+    .table-actions {
+        min-width: 9rem;
     }
 }
