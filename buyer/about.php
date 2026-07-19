@@ -7,6 +7,7 @@ include __DIR__ . '/../includes/header.php';
 <section class="page-section">
     <div class="container">
         <div class="setup-panel about-panel">
+            <img class="about-logo mb-3" src="<?php echo BASE_URL; ?>assets/images/Whole_logo-tela_icon-and-text.png" alt="TELA Technology Enhanced Lifestyle Apparel logo">
             <p class="section-label mb-2">About TELA</p>
             <h1 class="h3 mb-3">Technology Enhanced Lifestyle Apparel</h1>
             <p class="lead">TELA is an educational online store focused exclusively on Hoodies.</p>

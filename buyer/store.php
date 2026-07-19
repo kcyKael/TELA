@@ -21,7 +21,7 @@ $isSearchActive = $searchTerm !== '';
 
 function getStoreProductImage($imagePath)
 {
-    $fallbackImage = BASE_URL . 'assets/images/logo.png';
+    $fallbackImage = BASE_URL . 'assets/images/Whole_logo-tela_icon-and-text.png';
     $imagePath = trim((string) $imagePath);
 
     if ($imagePath === '') {

@@ -13,6 +13,7 @@ if (isset($_SESSION['user_id'], $_SESSION['role'], $_SESSION['is_verified']) && 
 <section class="page-section">
     <div class="container">
         <div class="setup-panel home-panel text-center">
+            <img class="home-logo mb-3" src="<?php echo BASE_URL; ?>assets/images/Whole_logo-tela_icon-and-text.png" alt="TELA Technology Enhanced Lifestyle Apparel logo">
             <p class="section-label mb-2">Technology Enhanced Lifestyle Apparel</p>
             <h1 class="display-6 mb-3">TELA</h1>
             <p class="lead mb-3">A focused online store for Hoodies.</p>

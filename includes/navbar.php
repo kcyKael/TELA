@@ -5,8 +5,8 @@ $brandPath = $userRole === 'admin' ? 'admin/dashboard.php' : ($userRole === 'buy
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="<?php echo BASE_URL . $brandPath; ?>">
-            <span><?php echo GROUP_NAME; ?></span>
+        <a class="navbar-brand d-flex align-items-center" href="<?php echo BASE_URL . $brandPath; ?>">
+            <img class="navbar-brand-logo" src="<?php echo BASE_URL; ?>assets/images/navlogo-tela_text.png" alt="TELA">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>

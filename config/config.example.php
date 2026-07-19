@@ -13,6 +13,7 @@ define('BREVO_API_KEY', 'your-brevo-api-key-here');
 define('BREVO_SENDER_NAME', 'TELA');
 define('BREVO_SENDER_EMAIL', 'verified-sender@example.com');
 define('APP_BASE_URL', 'http://localhost/TELA');
+define('BASE_URL', '/TELA/');
 
 // Production may instead provide TELA_APP_ENV, TELA_DB_HOST, TELA_DB_USER,
 // TELA_DB_PASSWORD, and TELA_DB_NAME through server environment variables.

@@ -17,6 +17,7 @@ if (!isset($activePage)) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo escapeOutput($pageTitle); ?> | <?php echo SITE_NAME; ?></title>
+    <link rel="icon" type="image/png" href="<?php echo BASE_URL; ?>assets/images/tab-icon-tela_logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="<?php echo BASE_URL; ?>assets/css/style.css" rel="stylesheet">
 </head>

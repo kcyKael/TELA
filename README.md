@@ -27,19 +27,21 @@ TELA sells one apparel product category only: Hoodies.
 - `database/` - SQL files for database structure and seed data
 - `docs/` - Setup guide, screenshots, sample accounts, and defense documents
 - `includes/` - Shared header, navbar, footer, helper functions, and auth checks
-- `uploads/` - Uploaded product and profile images
+- `uploads/` - Uploaded product images
 
 ## Local Setup
 
 1. Place this folder inside `C:\xampp\htdocs`.
 2. Start Apache and MySQL in XAMPP.
-3. Create the project database when `database/tela_schema.sql` is finalized.
-4. Configure database credentials in `config/database.php`.
-5. Visit `http://localhost/TELA/`.
+3. Import `database/tela_schema.sql` through phpMyAdmin.
+4. Copy `config/config.example.php` to the ignored `config/config.local.php` file.
+5. Configure the database, URL, and Brevo verification-email values.
+6. Confirm `uploads/products/` exists and is writable.
+7. Visit `http://localhost/TELA/`.
 
 ## Group Details
 
-Group name and member details will be finalized before submission.
+Group member names and contributions must replace the About-page placeholders before final screenshots.
 
 ## Disclaimer
 
