@@ -55,6 +55,9 @@ $userRole = $isLoggedIn ? $_SESSION['role'] : '';
                         <a class="nav-link <?php echo $activePage === 'admin_users' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/users.php">Users</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link <?php echo $activePage === 'admin_orders' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/orders.php">Orders</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link <?php echo $activePage === 'admin_categories' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/categories.php">Categories</a>
                     </li>
                     <li class="nav-item">
