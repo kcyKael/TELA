@@ -58,6 +58,14 @@ main {
     min-width: 950px;
 }
 
+.order-management-panel {
+    max-width: 1200px;
+}
+
+.admin-orders-table {
+    min-width: 1050px;
+}
+
 .order-items-table {
     min-width: 600px;
     table-layout: fixed;

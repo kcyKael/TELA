@@ -83,7 +83,7 @@ include __DIR__ . '/../includes/header.php';
 
 <section class="page-section">
     <div class="container">
-        <div class="setup-panel">
+        <div class="setup-panel order-management-panel">
             <p class="section-label mb-2">Admin Management</p>
             <h1 class="h3 mb-2">Order Management</h1>
             <p class="text-muted mb-4">View all buyer orders and their current status.</p>
@@ -99,7 +99,7 @@ include __DIR__ . '/../includes/header.php';
                 <a class="btn btn-dark" href="<?php echo BASE_URL; ?>admin/dashboard.php">Back to Dashboard</a>
             <?php else: ?>
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0 admin-orders-table">
                         <thead>
                             <tr>
                                 <th scope="col" class="text-nowrap">Order Number</th>
