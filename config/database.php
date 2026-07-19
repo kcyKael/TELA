@@ -7,7 +7,6 @@ if (!function_exists('mysqli_connect')) {
     die('A database connection error occurred. Please try again later.');
 }
 
-// The application handles MySQLi failures procedurally and shows safe messages.
 mysqli_report(MYSQLI_REPORT_OFF);
 
 $dbHost = DB_HOST;
