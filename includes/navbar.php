@@ -38,7 +38,9 @@ $userRole = $isLoggedIn ? $_SESSION['role'] : '';
                     <li class="nav-item">
                         <a class="nav-link <?php echo $activePage === 'cart' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>buyer/cart.php">Cart</a>
                     </li>
-
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo $activePage === 'orders' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>buyer/orders.php">My Orders</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link <?php echo $activePage === 'about' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>buyer/about.php">About</a>
                     </li>
