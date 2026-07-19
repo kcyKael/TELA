@@ -254,7 +254,12 @@ include __DIR__ . '/../includes/header.php';
                     <span class="h5 mb-0">Cart Total</span>
                     <strong class="h4 mb-0">PHP <?php echo escapeOutput(number_format($cartTotal, 2)); ?></strong>
                 </div>
-                <p class="text-muted small mt-2 mb-0">Prices and availability are based on current product information.</p>
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mt-3">
+                    <p class="text-muted small mb-0">Prices and availability are based on current product information.</p>
+                    <a class="btn btn-dark" href="<?php echo BASE_URL; ?>buyer/checkout.php">
+                        Proceed to Checkout
+                    </a>
+                </div>
             <?php endif; ?>
         </div>
     </div>
